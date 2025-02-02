@@ -16,6 +16,21 @@ const Dashboard = () => {
   return (
     <div className="flex h-screen bg-gray-50 transition-all duration-300">
       {/* Sidebar Drawer */}
+      <div className={`fixed inset-y-0 left-0 transform ${isDrawerOpen ? "translate-x-0" : "-translate-x-full"} w-64 bg-white shadow-xl transition-transform duration-300 p-6 z-50`}>
+        <button onClick={() => setIsDrawerOpen(false)} className="mb-6 text-gray-600 hover:text-gray-900 text-lg">
+          <FaTimes />
+        </button>
+        <h2 className="text-2xl font-bold mb-6">Hey Buddy</h2>
+        <ul className="space-y-4">
+          <li className="flex items-center space-x-2 cursor-pointer hover:text-blue-500"><FaProjectDiagram /> <span>Dashboard</span></li>
+          <li className="flex items-center space-x-2 cursor-pointer hover:text-blue-500"><FaUsers /> <span>Find Buddies</span></li>
+          <li className="flex items-center space-x-2 cursor-pointer hover:text-blue-500"><FaComments /> <span>Chat</span></li>
+          <li className="flex items-center space-x-2 cursor-pointer hover:text-blue-500"><FaCalendarAlt /> <span>Events</span></li>
+          <li className="flex items-center space-x-2 cursor-pointer hover:text-blue-500"><FaTrophy /> <span>Achievements</span></li>
+          <li className="flex items-center space-x-2 cursor-pointer hover:text-blue-500"><FaQuestionCircle /> <span>Help</span></li>
+          <li className="flex items-center space-x-2 cursor-pointer hover:text-blue-500"><FaCog /> <span>Settings</span></li>
+        </ul>
+      </div>
       
       {/* Main Content */}
       <div className={`flex-1 p-10 transition-all duration-300 ${isDrawerOpen ? "ml-64" : "ml-0"}`}>
