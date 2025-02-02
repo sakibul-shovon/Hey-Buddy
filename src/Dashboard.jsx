@@ -72,6 +72,24 @@ const Dashboard = () => {
             <p className="text-gray-600 text-sm">🏆 Team Player - Collaborated with 10 different teams</p>
           </div>
         </div>
+        
+        <div className="p-4 bg-white shadow-md rounded-lg border border-gray-200 mb-6">
+          <h3 className="text-lg font-semibold mb-4 text-center">Activity Heatmap</h3>
+          <div className="overflow-x-auto flex justify-center">
+            <CalendarHeatmap
+              startDate={new Date('2024-01-01')}
+              endDate={new Date('2024-12-31')}
+              values={heatmapData}
+              classForValue={(value) => {
+                if (!value) {
+                  return 'color-empty';
+                }
+                return `color-scale-${value.count}`;
+              }}
+              style={{ width: '100%', maxWidth: '500px', margin: 'auto' }}
+            />
+          </div>
+        </div>
       </div>
     </div>
   );
