@@ -1,9 +1,8 @@
-// import { Button } from './Button';
-import React from 'react';
-import { Button } from './Button';
-import { ArrowRight } from 'lucide-react';
+import React from "react";
+import Button from "./Button";
+import { ArrowRight } from "lucide-react";
 
-export function CTA() {
+function CTA() {
   return (
     <section className="border-t bg-muted/50">
       <div className="container py-24">
@@ -23,3 +22,5 @@ export function CTA() {
     </section>
   );
 }
+
+export default CTA;

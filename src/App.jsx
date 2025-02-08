@@ -1,16 +1,33 @@
 import { ThemeProvider } from "./context/ThemeContext";
-import Header from "./components/Header";
-import Hero from "./components/Hero";
-import Features from "./components/Features";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
+
+import LandingPage from "./pages/LandingPage";
+import LoginPage from "./pages/LoginPage";
+
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: (
+      <div>
+        <LandingPage />
+      </div>
+    ),
+  },
+  {
+    path: "/login",
+    element: (
+      <div>
+        <LoginPage />
+      </div>
+    ),
+  },
+  
+]);
 
 function App() {
   return (
     <ThemeProvider>
-      <Header />
-      <main>
-        <Hero />
-        <Features />
-      </main>
+      <RouterProvider router={router} />
     </ThemeProvider>
   );
 }
