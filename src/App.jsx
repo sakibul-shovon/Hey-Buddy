@@ -1,7 +1,8 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { ThemeProvider } from "./context/ThemeContext";
 import LandingPage from "./pages/LandingPage";
-import LoginPage from "./pages/LoginPage";
+import Login from "./pages/Login";
+import SignUp from "./pages/SignUp";
 
 import FindBuddy from "./pages/FindBuddy";
 import MicroProjectsPage from "./pages/MicroProjectsPage";
@@ -13,7 +14,8 @@ function App() {
       <Router>
         <Routes>
           <Route path="/" element={<LandingPage />} />
-          <Route path="/login" element={<LoginPage />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<SignUp />} />
           <Route path="/find_budy" element={<FindBuddy/>} />
           <Route path="/micro_project" element={<MicroProjectsPage />} />
           <Route path="/show_case" element={<ShowcaseProjectsPage/>} />

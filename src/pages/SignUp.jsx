@@ -25,7 +25,7 @@ function Signup() {
                 setErrorMessage("User already exists. Try logging in.");
             } else if (res.data === "notexist") {
                 alert("Signup successful!");
-                navigate("/home", { state: { id: email } });
+                navigate("/", { state: { id: email } });
             } else {
                 setErrorMessage("Unexpected response: " + res.data);
             }

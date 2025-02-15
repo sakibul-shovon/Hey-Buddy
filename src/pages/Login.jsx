@@ -23,7 +23,7 @@ function Login() {
 
             if (res.data === "exist") {
                 alert("Login successful!");
-                navigate("/LandingPage", { state: { id: email } });
+                navigate("/find_budy", { state: { id: email } });
             } else if (res.data === "notexist") {
                 setErrorMessage("User not registered. Please sign up.");
             } else {
