@@ -7,6 +7,7 @@ import SignUp from "./pages/SignUp";
 import FindBuddy from "./pages/FindBuddy";
 import MicroProjectsPage from "./pages/MicroProjectsPage";
 import ShowcaseProjectsPage from "./pages/ShowcaseProjectsPage";
+import Dashboard from "./pages/Dashboard";
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
           <Route path="/find_buddy" element={<FindBuddy/>} />
           <Route path="/micro_project" element={<MicroProjectsPage />} />
           <Route path="/show_case" element={<ShowcaseProjectsPage/>} />
+          <Route path="/dashboard" element={<Dashboard/>} />
         </Routes>
       </Router>
     </ThemeProvider>

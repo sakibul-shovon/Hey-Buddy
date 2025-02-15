@@ -1,10 +1,16 @@
 import React, { useState } from "react";
-import { FaTrophy, FaUsers, FaProjectDiagram, FaCalendarAlt, FaCog, FaQuestionCircle, FaComments, FaBars, FaTimes } from "react-icons/fa";
+import {
+  FaTrophy, FaUsers, FaProjectDiagram, FaCalendarAlt, FaCog,
+  FaQuestionCircle, FaComments, FaBars, FaTimes
+} from "react-icons/fa";
 import CalendarHeatmap from 'react-calendar-heatmap';
 import 'react-calendar-heatmap/dist/styles.css';
+import { useNavigate, Link } from "react-router-dom";
 
 const Dashboard = () => {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const navigate = useNavigate();
+
   const heatmapData = [
     { date: '2024-02-01', count: 2 },
     { date: '2024-02-05', count: 4 },
@@ -23,8 +29,10 @@ const Dashboard = () => {
         <h2 className="text-2xl font-bold mb-6">Hey Buddy</h2>
         <ul className="space-y-4">
           <li className="flex items-center space-x-2 cursor-pointer hover:text-blue-500"><FaProjectDiagram /> <span>Dashboard</span></li>
-          <li className="flex items-center space-x-2 cursor-pointer hover:text-blue-500"><FaUsers /> <span>Find Buddies</span></li>
-          <li className="flex items-center space-x-2 cursor-pointer hover:text-blue-500"><FaComments /> <span>Chat</span></li>
+          <li onClick={() => navigate("/find_buddy")} className="flex items-center space-x-2 cursor-pointer hover:text-blue-500"><FaUsers /> <span>Find Buddies</span></li>
+          <li onClick={() => navigate("/micro_project")} className="flex items-center space-x-2 cursor-pointer hover:text-blue-500"><FaUsers /> <span>MicroProjects</span></li>
+          <li onClick={() => navigate("/show_case")} className="flex items-center space-x-2 cursor-pointer hover:text-blue-500"><FaUsers /> <span>Showcase Projects</span></li>
+          <li  className="flex items-center space-x-2 cursor-pointer hover:text-blue-500"><FaComments /> <span>Chat</span></li>
           <li className="flex items-center space-x-2 cursor-pointer hover:text-blue-500"><FaCalendarAlt /> <span>Events</span></li>
           <li className="flex items-center space-x-2 cursor-pointer hover:text-blue-500"><FaTrophy /> <span>Achievements</span></li>
           <li className="flex items-center space-x-2 cursor-pointer hover:text-blue-500"><FaQuestionCircle /> <span>Help</span></li>
@@ -80,12 +88,7 @@ const Dashboard = () => {
               startDate={new Date('2024-01-01')}
               endDate={new Date('2024-12-31')}
               values={heatmapData}
-              classForValue={(value) => {
-                if (!value) {
-                  return 'color-empty';
-                }
-                return `color-scale-${value.count}`;
-              }}
+              classForValue={(value) => value ? `color-scale-${value.count}` : 'color-empty'}
               style={{ width: '100%', maxWidth: '500px', margin: 'auto' }}
             />
           </div>

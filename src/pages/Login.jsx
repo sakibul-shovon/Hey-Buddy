@@ -30,7 +30,7 @@ function Login() {
 
             if (res.data === "exist") {
                 alert("✅ Login successful!");
-                navigate("/find_buddy");
+                navigate("/dashboard");
             } else if (res.data === "notexist") {
                 setErrorMessage("⚠️ User not found. Please sign up first.");
             } else if (res.data === "wrongpassword") {
