@@ -26,8 +26,6 @@ function Login() {
                 navigate("/LandingPage", { state: { id: email } });
             } else if (res.data === "notexist") {
                 setErrorMessage("User not registered. Please sign up.");
-            } else if (res.data === "wrongpassword") {
-                setErrorMessage("Incorrect password. Try again.");
             } else {
                 setErrorMessage("Unexpected response: " + res.data);
             }
