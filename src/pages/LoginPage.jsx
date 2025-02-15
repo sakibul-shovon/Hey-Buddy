@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
 
-function Signup() {
+function Login() {
     const navigate = useNavigate();
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
@@ -17,28 +17,30 @@ function Signup() {
         }
 
         try {
-            const res = await axios.post("http://localhost:8000/signup", { email, password });
+            const res = await axios.post("http://localhost:8000/", { email, password });
 
             console.log("Response:", res.data);
 
             if (res.data === "exist") {
-                setErrorMessage("User already exists. Try logging in.");
+                alert("Login successful!");
+                navigate("/LandingPage", { state: { id: email } });
             } else if (res.data === "notexist") {
-                alert("Signup successful!");
-                navigate("/home", { state: { id: email } });
+                setErrorMessage("User not registered. Please sign up.");
+            } else if (res.data === "wrongpassword") {
+                setErrorMessage("Incorrect password. Try again.");
             } else {
                 setErrorMessage("Unexpected response: " + res.data);
             }
         } catch (error) {
-            console.error("Signup Error:", error);
-            setErrorMessage("Something went wrong. Try again.");
+            console.error("Login Error:", error);
+            setErrorMessage("Invalid login credentials. Try again.");
         }
     }
 
     return (
         <div className="flex min-h-screen items-center justify-center bg-gray-100 p-6">
             <div className="w-full max-w-md bg-white rounded-lg shadow-lg p-8">
-                <h1 className="text-2xl font-semibold text-center text-gray-800 mb-6">Create an Account</h1>
+                <h1 className="text-2xl font-semibold text-center text-gray-800 mb-6">Login</h1>
 
                 {errorMessage && (
                     <p className="text-red-500 text-sm text-center bg-red-100 p-2 rounded-lg mb-4">
@@ -81,14 +83,14 @@ function Signup() {
                         type="submit"
                         className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition duration-300 ease-in-out shadow-md"
                     >
-                        Sign Up
+                        Login
                     </button>
                 </form>
 
                 <p className="mt-4 text-sm text-gray-600 text-center">
-                    Already have an account?{" "}
-                    <Link to="/" className="text-blue-600 hover:underline">
-                        Log in here
+                    Don't have an account?{" "}
+                    <Link to="/signup" className="text-blue-600 hover:underline">
+                        Sign up here
                     </Link>
                 </p>
             </div>
@@ -96,4 +98,4 @@ function Signup() {
     );
 }
 
-export default Signup;
+export default Login;
