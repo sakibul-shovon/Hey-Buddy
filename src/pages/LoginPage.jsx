@@ -22,18 +22,18 @@ function Login() {
             console.log("Response:", res.data);
 
             if (res.data === "exist") {
-                alert("Login successful!");
+                alert("✅ Login successful!");
                 navigate("/LandingPage", { state: { id: email } });
             } else if (res.data === "notexist") {
-                setErrorMessage("User not registered. Please sign up.");
+                setErrorMessage("❌ User not registered. Please sign up.");
             } else if (res.data === "wrongpassword") {
-                setErrorMessage("Incorrect password. Try again.");
+                setErrorMessage("❌ Incorrect password. Try again.");
             } else {
-                setErrorMessage("Unexpected response: " + res.data);
+                setErrorMessage("❌ Unexpected response: " + res.data);
             }
         } catch (error) {
-            console.error("Login Error:", error);
-            setErrorMessage("Invalid login credentials. Try again.");
+            console.error("❌ Login Error:", error);
+            setErrorMessage("❌ Invalid login credentials. Try again.");
         }
     }
 
