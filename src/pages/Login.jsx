@@ -7,70 +7,77 @@ function Login() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [errorMessage, setErrorMessage] = useState("");
+    const [loading, setLoading] = useState(false);
+
+    // ✅ API Endpoint
+    const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
 
     async function submit(e) {
         e.preventDefault();
+        setErrorMessage("");
+        setLoading(true);
 
         if (!email || !password) {
-            setErrorMessage("Both fields are required!");
+            setErrorMessage("⚠️ Both fields are required!");
+            setLoading(false);
             return;
         }
 
         try {
-            const res = await axios.post("http://localhost:8000/", { email, password });
+            const res = await axios.post(`${API_URL}/login`, { email, password });
 
-            console.log("Response:", res.data);
+            console.log("✅ Server Response:", res.data);
 
             if (res.data === "exist") {
-                alert("Login successful!");
-                navigate("/find_budy", { state: { id: email } });
+                alert("✅ Login successful!");
+                navigate("/find_buddy");
             } else if (res.data === "notexist") {
-                setErrorMessage("User not registered. Please sign up.");
+                setErrorMessage("⚠️ User not found. Please sign up first.");
+            } else if (res.data === "wrongpassword") {
+                setErrorMessage("❌ Incorrect password. Try again.");
             } else {
-                setErrorMessage("Unexpected response: " + res.data);
+                setErrorMessage("❌ Unexpected response: " + res.data);
             }
         } catch (error) {
-            console.error("Login Error:", error);
-            setErrorMessage("Invalid login credentials. Try again.");
+            console.error("❌ Login Error:", error);
+            setErrorMessage("⚠️ Server error. Please try again.");
         }
+
+        setLoading(false);
     }
 
     return (
-        <div className="flex min-h-screen items-center justify-center bg-gray-100 p-6">
-            <div className="w-full max-w-md bg-white rounded-lg shadow-lg p-8">
-                <h1 className="text-2xl font-semibold text-center text-gray-800 mb-6">Login</h1>
+        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#FFF2F2] via-[#A9B5DF] to-[#7886C7] p-6">
+            <div className="relative w-full max-w-md bg-white bg-opacity-10 backdrop-blur-xl rounded-xl shadow-2xl p-8">
+                <h1 className="text-4xl font-bold text-center text-white mb-8 drop-shadow-lg">
+                    Welcome Back ✨
+                </h1>
 
                 {errorMessage && (
-                    <p className="text-red-500 text-sm text-center bg-red-100 p-2 rounded-lg mb-4">
+                    <p className="text-[#D9534F] text-sm text-center bg-[#FFF2F2] p-2 rounded-lg mb-4 shadow-lg">
                         {errorMessage}
                     </p>
                 )}
 
-                <form onSubmit={submit} className="space-y-4">
-                    <div>
-                        <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-                            Email Address
-                        </label>
+                <form onSubmit={submit} className="space-y-5">
+                    <div className="relative">
                         <input
                             type="email"
                             id="email"
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                            placeholder="Enter your email"
+                            className="w-full px-4 py-3 bg-[#A9B5DF] text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-white shadow-lg placeholder-white transition duration-300 ease-in-out"
+                            placeholder="Email Address"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
                             required
                         />
                     </div>
 
-                    <div>
-                        <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-                            Password
-                        </label>
+                    <div className="relative">
                         <input
                             type="password"
                             id="password"
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                            placeholder="Enter your password"
+                            className="w-full px-4 py-3 bg-[#2D336B] text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-white shadow-lg placeholder-white transition duration-300 ease-in-out"
+                            placeholder="Password"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                             required
@@ -79,15 +86,16 @@ function Login() {
 
                     <button
                         type="submit"
-                        className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition duration-300 ease-in-out shadow-md"
+                        className="w-full bg-gradient-to-r from-[#2D336B] to-[#7886C7] hover:from-[#7886C7] hover:to-[#A9B5DF] text-white font-bold py-3 px-6 rounded-lg transition-all duration-300 ease-in-out shadow-xl transform hover:scale-105"
+                        disabled={loading}
                     >
-                        Login
+                        {loading ? "Logging in..." : "🚀 Login"}
                     </button>
                 </form>
 
-                <p className="mt-4 text-sm text-gray-600 text-center">
+                <p className="mt-6 text-sm text-white text-center">
                     Don't have an account?{" "}
-                    <Link to="/signup" className="text-blue-600 hover:underline">
+                    <Link to="/signup" className="text-[#FFF2F2] hover:underline font-semibold">
                         Sign up here
                     </Link>
                 </p>
