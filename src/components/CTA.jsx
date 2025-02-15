@@ -1,8 +1,15 @@
 import React from "react";
+import { useNavigate } from 'react-router-dom';
 import Button from "./Button";
 import { ArrowRight } from "lucide-react";
 
-function CTA() {
+const CTA = () => {
+  const navigate = useNavigate();
+
+  const handleGetStarted = () => {
+    navigate('/login');
+  };
+
   return (
     <section className="border-t bg-muted/50">
       <div className="container py-24">
@@ -13,7 +20,7 @@ function CTA() {
           <p className="max-w-[85%] text-muted-foreground sm:text-lg">
             Join thousands of developers and designers who are already collaborating and growing together.
           </p>
-          <Button size="lg" className="mt-4 gap-2">
+          <Button size="lg" className="mt-4 gap-2" onClick={handleGetStarted}>
             Get Started Now
             <ArrowRight className="h-4 w-4" />
           </Button>
@@ -21,6 +28,6 @@ function CTA() {
       </div>
     </section>
   );
-}
+};
 
 export default CTA;

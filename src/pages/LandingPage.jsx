@@ -6,8 +6,6 @@ import Stats from '../components/Stats';
 import CTA from '../components/CTA';
 import Footer from '../components/Footer';
 
-
-
 function LandingPage() {
   return (
     <div className="min-h-screen flex flex-col">
