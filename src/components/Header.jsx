@@ -1,10 +1,15 @@
-import React from "react";
 import { SunIcon, MoonIcon } from "lucide-react";
 import { useTheme } from "../context/ThemeContext";
+import { useNavigate } from "react-router-dom";
 import Button from "./Button";
 
 function Header() {
   const { theme, setTheme } = useTheme();
+  const navigate = useNavigate();
+
+  const toggleTheme = () => {
+    setTheme(theme === "light" ? "dark" : "light");
+  };
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur">
@@ -23,19 +28,19 @@ function Header() {
           <Button
             variant="ghost"
             size="icon"
-            onClick={() => setTheme(theme === "light" ? "dark" : "light")}
+            onClick={toggleTheme}
           >
-            {theme === "dark" ? (
-              <SunIcon className="h-5 w-5 text-yellow-400" />
-            ) : (
+            {theme === "light" ? (
               <MoonIcon className="h-5 w-5 text-gray-600" />
+            ) : (
+              <SunIcon className="h-5 w-5 text-yellow-400" />
             )}
             <span className="sr-only">Toggle theme</span>
           </Button>
 
           {/* Green "Get Started" Button */}
-          <Button className="bg-green-500 hover:bg-green-600 text-white">
-            Get Started
+          <Button className="bg-green-500 hover:bg-green-600 text-white" onClick={() => navigate("/login")}> 
+            Get Started 
           </Button>
         </nav>
       </div>
