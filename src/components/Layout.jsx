@@ -1,6 +1,16 @@
 import React, { useState, useEffect, useContext } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Sun, Moon } from "lucide-react";
+import {
+  Sun,
+  Moon,
+  Home,
+  Users,
+  Briefcase,
+  GalleryHorizontalEnd,
+  MessageSquare,
+  LayoutDashboard,
+} from "lucide-react";
+import { FaCog } from "react-icons/fa"; // Add this import for FaCog
 import { AuthContext } from "../context/AuthContext";
 
 const Layout = ({ children }) => {
@@ -42,65 +52,95 @@ const Layout = ({ children }) => {
       {showNav && (
         <header className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 shadow-sm">
           <nav className="container mx-auto px-6 py-4 flex items-center justify-between">
+            {/* Logo */}
             <Link
               to="/"
-              className="text-xl font-semibold text-gray-800 dark:text-gray-100 hover:text-teal-600 dark:hover:text-teal-400 transition-colors duration-200"
+              className="text-2xl font-semibold text-gray-800 dark:text-gray-100 hover:text-teal-600 dark:hover:text-teal-400 transition-colors duration-200 flex items-center space-x-2"
             >
-              HeyBuddy
+              <LayoutDashboard className="w-6 h-6" />
+              <span>HeyBuddy</span>
             </Link>
-            <div className="flex items-center space-x-8">
-              <div className="space-x-6">
+
+            {/* Navigation Links */}
+            <div className="flex items-center space-x-12">
+              <div className="flex items-center space-x-8">
                 <Link
                   to="/"
-                  className="text-gray-600 dark:text-gray-300 hover:text-teal-600 dark:hover:text-teal-400 transition-colors duration-200"
+                  className="flex items-center space-x-2 text-gray-600 dark:text-gray-300 hover:text-teal-600 dark:hover:text-teal-400 transition-colors duration-200"
                 >
-                  Home
+                  <Home className="w-5 h-5" />
+                  <span>Home</span>
                 </Link>
                 <Link
                   to="/find_buddy"
-                  className="text-gray-600 dark:text-gray-300 hover:text-teal-600 dark:hover:text-teal-400 transition-colors duration-200"
+                  className="flex items-center space-x-2 text-gray-600 dark:text-gray-300 hover:text-teal-600 dark:hover:text-teal-400 transition-colors duration-200"
                 >
-                  Find Buddy
+                  <Users className="w-5 h-5" />
+                  <span>Find Buddy</span>
                 </Link>
                 <Link
                   to="/micro_project"
-                  className="text-gray-600 dark:text-gray-300 hover:text-teal-600 dark:hover:text-teal-400 transition-colors duration-200"
+                  className="flex items-center space-x-2 text-gray-600 dark:text-gray-300 hover:text-teal-600 dark:hover:text-teal-400 transition-colors duration-200"
                 >
-                  Micro Projects
+                  <Briefcase className="w-5 h-5" />
+                  <span>Micro Projects</span>
                 </Link>
                 <Link
                   to="/show_case"
-                  className="text-gray-600 dark:text-gray-300 hover:text-teal-600 dark:hover:text-teal-400 transition-colors duration-200"
+                  className="flex items-center space-x-2 text-gray-600 dark:text-gray-300 hover:text-teal-600 dark:hover:text-teal-400 transition-colors duration-200"
                 >
-                  Showcase
+                  <GalleryHorizontalEnd className="w-5 h-5" />
+                  <span>Showcase</span>
                 </Link>
+                <Link
+                  to="/chat"
+                  className="flex items-center space-x-2 text-gray-600 dark:text-gray-300 hover:text-teal-600 dark:hover:text-teal-400 transition-colors duration-200"
+                >
+                  <MessageSquare className="w-5 h-5" />
+                  <span>Chat</span>
+                </Link>
+                {isAuthenticated && (
+                  <Link
+                    to="/dashboard"
+                    className="flex items-center space-x-2 text-gray-600 dark:text-gray-300 hover:text-teal-600 dark:hover:text-teal-400 transition-colors duration-200"
+                  >
+                    <LayoutDashboard className="w-5 h-5" />
+                    <span>Dashboard</span>
+                  </Link>
+                )}
               </div>
-              <div className="flex items-center space-x-4">
+
+              {/* User Actions */}
+              <div className="flex items-center space-x-6">
                 {isAuthenticated ? (
                   <>
-                    <span className="text-gray-600 dark:text-gray-300">
-                      Welcome, {username}
+                    <span className="flex items-center space-x-2 text-gray-600 dark:text-gray-300">
+                      <Users className="w-5 h-5" />
+                      <span>Welcome, {username}</span>
                     </span>
                     <button
                       onClick={handleLogout}
-                      className="text-sm text-gray-600 dark:text-gray-300 hover:text-red-600 dark:hover:text-red-400 transition-colors duration-200"
+                      className="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-300 hover:text-red-600 dark:hover:text-red-400 transition-colors duration-200"
                     >
-                      Logout
+                      <FaCog className="w-5 h-5" />
+                      <span>Logout</span>
                     </button>
                   </>
                 ) : (
                   <>
                     <Link
                       to="/login"
-                      className="text-sm text-gray-600 dark:text-gray-300 hover:text-teal-600 dark:hover:text-teal-400 transition-colors duration-200"
+                      className="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-300 hover:text-teal-600 dark:hover:text-teal-400 transition-colors duration-200"
                     >
-                      Login
+                      <Users className="w-5 h-5" />
+                      <span>Login</span>
                     </Link>
                     <Link
                       to="/signup"
-                      className="text-sm bg-teal-600 dark:bg-teal-500 text-white px-4 py-2 rounded-md hover:bg-teal-500 dark:hover:bg-teal-400 transition-colors duration-200"
+                      className="flex items-center space-x-2 text-sm bg-teal-600 dark:bg-teal-500 text-white px-4 py-2 rounded-md hover:bg-teal-500 dark:hover:bg-teal-400 transition-colors duration-200"
                     >
-                      Sign Up
+                      <Users className="w-5 h-5" />
+                      <span>Sign Up</span>
                     </Link>
                   </>
                 )}
@@ -109,7 +149,7 @@ const Layout = ({ children }) => {
                   className="p-2 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors duration-200"
                   aria-label="Toggle theme"
                 >
-                  {isDarkMode ? <Sun size={18} /> : <Moon size={18} />}
+                  {isDarkMode ? <Sun size={20} /> : <Moon size={20} />}
                 </button>
               </div>
             </div>

@@ -7,7 +7,7 @@ function Signup() {
   const navigate = useNavigate();
   const { login } = useContext(AuthContext);
   const [email, setEmail] = useState("");
-  const [username, setUsername] = useState(""); // Add username field
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const [loading, setLoading] = useState(false);
@@ -33,7 +33,7 @@ function Signup() {
       if (res.data === "exist") {
         setErrorMessage("⚠️ User already exists. Try logging in.");
       } else if (res.data === "notexist") {
-        login("dummy-token", username); // Pass username to context
+        login("dummy-token", username);
         alert("✅ Signup successful!");
         navigate("/dashboard");
       } else {
@@ -48,65 +48,89 @@ function Signup() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#FFF2F2] via-[#A9B5DF] to-[#7886C7] p-6">
-      <div className="relative w-full max-w-md bg-white bg-opacity-10 backdrop-blur-xl rounded-xl shadow-2xl p-8">
-        <h1 className="text-4xl font-bold text-center text-white mb-8 drop-shadow-lg">
-          Create an Account 🚀
+    <div className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-gray-900 p-6">
+      <div className="w-full max-w-md bg-white dark:bg-gray-800 rounded-lg shadow-lg p-8">
+        <h1 className="text-3xl font-semibold text-gray-800 dark:text-gray-100 mb-6 text-center">
+          Create Account
         </h1>
 
         {errorMessage && (
-          <p className="text-[#D9534F] text-sm text-center bg-[#FFF2F2] p-2 rounded-lg mb-4 shadow-lg">
+          <p className="text-red-600 dark:text-red-400 text-sm text-center bg-red-50 dark:bg-red-900/20 p-3 rounded-md mb-6">
             {errorMessage}
           </p>
         )}
 
-        <form onSubmit={submit} className="space-y-5">
-          <div className="relative">
+        <form onSubmit={submit} className="space-y-6">
+          <div>
+            <label
+              htmlFor="email"
+              className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+            >
+              Email Address
+            </label>
             <input
               type="email"
               id="email"
-              className="w-full px-4 py-3 bg-[#A9B5DF] text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-white shadow-lg placeholder-white transition duration-300 ease-in-out"
-              placeholder="Email Address"
+              className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 dark:bg-gray-700 dark:text-gray-200 text-gray-900 placeholder-gray-400 dark:placeholder-gray-500 transition duration-200"
+              placeholder="Enter your email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
             />
           </div>
-          <div className="relative">
+
+          <div>
+            <label
+              htmlFor="username"
+              className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+            >
+              Username
+            </label>
             <input
               type="text"
               id="username"
-              className="w-full px-4 py-3 bg-[#A9B5DF] text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-white shadow-lg placeholder-white transition duration-300 ease-in-out"
-              placeholder="Username"
+              className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 dark:bg-gray-700 dark:text-gray-200 text-gray-900 placeholder-gray-400 dark:placeholder-gray-500 transition duration-200"
+              placeholder="Choose a username"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               required
             />
           </div>
-          <div className="relative">
+
+          <div>
+            <label
+              htmlFor="password"
+              className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+            >
+              Password
+            </label>
             <input
               type="password"
               id="password"
-              className="w-full px-4 py-3 bg-[#2D336B] text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-white shadow-lg placeholder-white transition duration-300 ease-in-out"
-              placeholder="Password"
+              className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 dark:bg-gray-700 dark:text-gray-200 text-gray-900 placeholder-gray-400 dark:placeholder-gray-500 transition duration-200"
+              placeholder="Create a password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
             />
           </div>
+
           <button
             type="submit"
-            className="w-full bg-gradient-to-r from-[#2D336B] to-[#7886C7] hover:from-[#7886C7] hover:to-[#A9B5DF] text-white font-bold py-3 px-6 rounded-lg transition-all duration-300 ease-in-out shadow-xl transform hover:scale-105"
+            className="w-full bg-teal-600 dark:bg-teal-500 text-white font-medium py-3 px-6 rounded-md hover:bg-teal-700 dark:hover:bg-teal-400 transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
             disabled={loading}
           >
-            {loading ? "Signing Up..." : "🚀 Sign Up"}
+            {loading ? "Creating Account..." : "Sign Up"}
           </button>
         </form>
 
-        <p className="mt-6 text-sm text-white text-center">
+        <p className="mt-6 text-sm text-gray-600 dark:text-gray-400 text-center">
           Already have an account?{" "}
-          <Link to="/login" className="text-[#FFF2F2] hover:underline font-semibold">
-            Log in here
+          <Link
+            to="/login"
+            className="text-teal-600 dark:text-teal-400 hover:underline font-medium"
+          >
+            Sign in here
           </Link>
         </p>
       </div>
