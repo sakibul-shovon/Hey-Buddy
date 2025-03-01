@@ -6,24 +6,28 @@ const app = express();
 const server = createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: "http://localhost:5173",
+    origin: ["http://localhost:5173", "http://localhost:5175"], // Allow both origins
     methods: ["GET", "POST"],
   },
 });
 
+// Store connected users (username -> socket ID)
 const users = {};
+// Store messages (array of { id, sender, recipient, text, timestamp, seen })
 const messages = [];
 
 io.on("connection", (socket) => {
   console.log("A user connected:", socket.id);
 
+  // User joins with their username
   socket.on("join", (username) => {
     users[username] = socket.id;
-    io.emit("userList", Object.keys(users)); // Emit to all clients
+    io.emit("userList", Object.keys(users));
     socket.emit("messageHistory", messages.filter((msg) => msg.sender === username || msg.recipient === username));
-    console.log("Users:", users); // Debug log
+    console.log("Users:", users);
   });
 
+  // Handle private messages
   socket.on("sendPrivateMessage", ({ recipient, text }) => {
     const sender = Object.keys(users).find((key) => users[key] === socket.id);
     const messageId = Date.now().toString();
@@ -44,6 +48,7 @@ io.on("connection", (socket) => {
     }
   });
 
+  // Handle message seen
   socket.on("markAsSeen", (messageId) => {
     const message = messages.find((msg) => msg.id === messageId);
     if (message) {
@@ -55,6 +60,7 @@ io.on("connection", (socket) => {
     }
   });
 
+  // Handle unsend message
   socket.on("unsendMessage", (messageId) => {
     const messageIndex = messages.findIndex((msg) => msg.id === messageId);
     if (messageIndex !== -1) {
@@ -68,6 +74,7 @@ io.on("connection", (socket) => {
     }
   });
 
+  // Handle edit message
   socket.on("editMessage", ({ messageId, newText }) => {
     const message = messages.find((msg) => msg.id === messageId);
     if (message) {
@@ -81,6 +88,7 @@ io.on("connection", (socket) => {
     }
   });
 
+  // Handle delete message
   socket.on("deleteMessage", (messageId) => {
     const messageIndex = messages.findIndex((msg) => msg.id === messageId);
     if (messageIndex !== -1) {
@@ -94,6 +102,7 @@ io.on("connection", (socket) => {
     }
   });
 
+  // Handle disconnection
   socket.on("disconnect", () => {
     const username = Object.keys(users).find((key) => users[key] === socket.id);
     if (username) {

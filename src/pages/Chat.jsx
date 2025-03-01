@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useContext } from "react";
 import io from "socket.io-client";
 import { AuthContext } from "../context/AuthContext";
-import { Edit, Trash2, Eye, Send } from "lucide-react";
+import { Edit, Trash2, Eye, Send, User, ChevronDown } from "lucide-react";
 
-const socket = io("http://localhost:5000");
+const socket = io("http://localhost:5000"); // Ensure this matches your backend port
 
 const Chat = () => {
   const { username } = useContext(AuthContext);
@@ -18,7 +18,7 @@ const Chat = () => {
     socket.emit("join", username);
 
     socket.on("userList", (userList) => {
-      console.log("Received userList:", userList); // Debug log
+      console.log("Received userList:", userList);
       setUsers(userList.filter((u) => u !== username));
     });
 
@@ -98,33 +98,43 @@ const Chat = () => {
   };
 
   return (
-    <div className="container mx-auto max-w-4xl px-4 py-8 h-screen flex flex-col">
-      <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-6">
-        Private Chat
+    <div className="container mx-auto max-w-5xl px-6 py-8 h-screen flex flex-col font-mono bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
+      <h1 className="text-4xl font-bold mb-8 text-teal-600 dark:text-teal-400 tracking-tight">
+        // Private Chat Terminal
       </h1>
-      <div className="flex flex-1 gap-4">
-        <div className="w-1/3 bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md">
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
-            Online Users
+      <div className="flex flex-1 gap-6">
+        {/* User List */}
+        <div className="w-1/3 bg-gray-200 dark:bg-gray-800 p-4 rounded-xl shadow-lg border border-gray-300 dark:border-gray-700">
+          <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-200 mb-4 flex items-center space-x-2">
+            <User size={20} className="text-green-500 dark:text-green-400" />
+            <span>Online Coders</span>
           </h2>
-          <ul className="space-y-2">
+          <ul className="space-y-3">
             {users.map((user) => (
               <li
                 key={user}
                 onClick={() => setSelectedUser(user)}
-                className={`p-2 rounded-md cursor-pointer ${
+                className={`flex items-center space-x-2 p-3 rounded-lg cursor-pointer transition-all duration-200 ${
                   selectedUser === user
-                    ? "bg-teal-100 dark:bg-teal-700 text-teal-800 dark:text-teal-200"
-                    : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+                    ? "bg-teal-100 dark:bg-teal-700 text-teal-800 dark:text-teal-200 shadow-md"
+                    : "text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-700 hover:text-teal-600 dark:hover:text-teal-400"
                 }`}
               >
-                {user}
+                <span className="w-2 h-2 bg-green-500 rounded-full"></span>
+                <span>{user}</span>
               </li>
             ))}
           </ul>
         </div>
-        <div className="w-2/3 flex flex-col">
-          <div className="flex-1 bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md overflow-y-auto">
+        {/* Chat Area */}
+        <div className="w-2/3 flex flex-col bg-gradient-to-br from-gray-50 to-gray-200 dark:from-gray-800 dark:to-gray-900 rounded-xl shadow-lg border border-gray-300 dark:border-gray-700">
+          <div className="p-4 bg-gray-300 dark:bg-gray-700 rounded-t-xl flex items-center space-x-2">
+            <span className="text-lg font-semibold text-gray-800 dark:text-gray-200">
+              {selectedUser ? `> Chatting with ${selectedUser}` : "> Select a user"}
+            </span>
+            {selectedUser && <ChevronDown size={20} className="text-gray-600 dark:text-gray-400" />}
+          </div>
+          <div className="flex-1 p-4 overflow-y-auto">
             {selectedUser ? (
               messages
                 .filter(
@@ -135,88 +145,92 @@ const Chat = () => {
                 .map((msg) => (
                   <div
                     key={msg.id}
-                    className={`mb-2 p-2 rounded-md flex items-center justify-between ${
-                      msg.sender === username
-                        ? "bg-teal-100 dark:bg-teal-700 text-right"
-                        : "bg-gray-100 dark:bg-gray-700 text-left"
+                    className={`mb-4 flex ${
+                      msg.sender === username ? "justify-end" : "justify-start"
                     }`}
                   >
-                    {editingMessageId === msg.id ? (
-                      <form onSubmit={saveEditedMessage} className="flex-1 flex gap-2">
-                        <input
-                          type="text"
-                          value={editText}
-                          onChange={(e) => setEditText(e.target.value)}
-                          className="flex-1 p-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 dark:bg-gray-700 dark:text-gray-200 text-gray-900"
-                        />
-                        <button
-                          type="submit"
-                          className="text-teal-600 dark:text-teal-400 hover:text-teal-700 dark:hover:text-teal-300"
-                        >
-                          Save
-                        </button>
-                      </form>
-                    ) : (
-                      <>
-                        <div className="flex-1">
-                          <span className="font-semibold text-gray-900 dark:text-gray-100">
-                            {msg.user}:
-                          </span>{" "}
-                          <span className="text-gray-800 dark:text-gray-200">
-                            {msg.text}
-                          </span>
-                          <span className="text-xs text-gray-500 dark:text-gray-400 ml-2">
-                            {msg.timestamp} {msg.seen && msg.sender === username ? "(Seen)" : ""}
-                          </span>
-                        </div>
-                        {msg.sender === username && (
-                          <div className="flex space-x-2">
-                            <button
-                              onClick={() => editMessage(msg.id, msg.text)}
-                              className="text-gray-500 dark:text-gray-400 hover:text-teal-600 dark:hover:text-teal-400"
-                            >
-                              <Edit size={16} />
-                            </button>
-                            <button
-                              onClick={() => deleteMessage(msg.id)}
-                              className="text-gray-500 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400"
-                            >
-                              <Trash2 size={16} />
-                            </button>
-                            <button
-                              onClick={() => unsendMessage(msg.id)}
-                              className="text-gray-500 dark:text-gray-400 hover:text-yellow-600 dark:hover:text-yellow-400"
-                            >
-                              <Eye size={16} />
-                            </button>
+                    <div
+                      className={`max-w-xs p-3 rounded-lg shadow-md transition-all duration-200 ${
+                        msg.sender === username
+                          ? "bg-teal-600 dark:bg-teal-500 text-white"
+                          : "bg-gray-300 dark:bg-gray-700 text-gray-900 dark:text-gray-200"
+                      }`}
+                    >
+                      {editingMessageId === msg.id ? (
+                        <form onSubmit={saveEditedMessage} className="flex gap-2">
+                          <input
+                            type="text"
+                            value={editText}
+                            onChange={(e) => setEditText(e.target.value)}
+                            className="flex-1 p-2 bg-gray-100 dark:bg-gray-600 border border-gray-300 dark:border-gray-500 rounded-md text-gray-900 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-teal-400"
+                          />
+                          <button
+                            type="submit"
+                            className="text-teal-200 hover:text-teal-300 transition-colors"
+                          >
+                            Save
+                          </button>
+                        </form>
+                      ) : (
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <span className="font-semibold">
+                              {msg.user === username ? "You" : msg.user}:
+                            </span>{" "}
+                            <span>{msg.text}</span>
+                            <div className="text-xs text-gray-400 dark:text-gray-500 mt-1">
+                              {msg.timestamp} {msg.seen && msg.sender === username ? "(Seen)" : ""}
+                            </div>
                           </div>
-                        )}
-                      </>
-                    )}
+                          {msg.sender === username && (
+                            <div className="flex space-x-2 ml-2">
+                              <button
+                                onClick={() => editMessage(msg.id, msg.text)}
+                                className="text-gray-200 dark:text-gray-400 hover:text-teal-300 dark:hover:text-teal-200 transition-colors"
+                              >
+                                <Edit size={16} />
+                              </button>
+                              <button
+                                onClick={() => deleteMessage(msg.id)}
+                                className="text-gray-200 dark:text-gray-400 hover:text-red-500 dark:hover:text-red-400 transition-colors"
+                              >
+                                <Trash2 size={16} />
+                              </button>
+                              <button
+                                onClick={() => unsendMessage(msg.id)}
+                                className="text-gray-200 dark:text-gray-400 hover:text-yellow-500 dark:hover:text-yellow-400 transition-colors"
+                              >
+                                <Eye size={16} />
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </div>
                   </div>
                 ))
             ) : (
-              <p className="text-gray-500 dark:text-gray-400 text-center">
-                Select a user to start chatting
+              <p className="text-gray-500 dark:text-gray-400 text-center mt-10">
+                // Select a coder to start chatting
               </p>
             )}
           </div>
-          <form onSubmit={sendMessage} className="mt-4 flex gap-2">
+          <form onSubmit={sendMessage} className="p-4 bg-gray-200 dark:bg-gray-800 rounded-b-xl flex gap-2">
             <input
               type="text"
               value={message}
               onChange={(e) => setMessage(e.target.value)}
               placeholder={
                 selectedUser
-                  ? `Message ${selectedUser}...`
-                  : "Select a user first"
+                  ? `> ${selectedUser}: `
+                  : "// Select a user first"
               }
-              className="flex-1 p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 dark:bg-gray-700 dark:text-gray-200 text-gray-900 placeholder-gray-400 dark:placeholder-gray-500"
+              className="flex-1 p-3 bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 text-gray-900 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-500 transition-all duration-200"
               disabled={!selectedUser}
             />
             <button
               type="submit"
-              className="bg-teal-600 dark:bg-teal-500 text-white px-6 py-3 rounded-lg hover:bg-teal-700 dark:hover:bg-teal-400 transition-colors duration-200 disabled:bg-gray-400 dark:disabled:bg-gray-600 disabled:cursor-not-allowed flex items-center space-x-2"
+              className="bg-teal-600 dark:bg-teal-500 text-white px-4 py-3 rounded-lg hover:bg-teal-700 dark:hover:bg-teal-400 transition-colors duration-200 disabled:bg-gray-400 dark:disabled:bg-gray-600 disabled:cursor-not-allowed flex items-center space-x-2 shadow-md"
               disabled={!selectedUser}
             >
               <Send size={18} />

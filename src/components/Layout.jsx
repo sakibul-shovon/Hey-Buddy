@@ -9,6 +9,8 @@ import {
   GalleryHorizontalEnd,
   MessageSquare,
   LayoutDashboard,
+  Menu,
+  X,
 } from "lucide-react";
 import { FaCog } from "react-icons/fa";
 import { AuthContext } from "../context/AuthContext";
@@ -22,6 +24,7 @@ const Layout = ({ children }) => {
     if (savedMode) return savedMode === "dark";
     return window.matchMedia("(prefers-color-scheme: dark)").matches;
   });
+  const [isMenuOpen, setIsMenuOpen] = useState(false); // State for mobile menu
 
   const noNavPages = ["/login", "/signup", "/dashboard"];
   const showNav = !noNavPages.includes(location.pathname);
@@ -37,10 +40,11 @@ const Layout = ({ children }) => {
   }, [isDarkMode]);
 
   const toggleTheme = () => setIsDarkMode((prev) => !prev);
-
+  const toggleMenu = () => setIsMenuOpen((prev) => !prev);
   const handleLogout = () => {
     logout();
     navigate("/");
+    setIsMenuOpen(false); // Close menu on logout
   };
 
   return (
@@ -52,6 +56,7 @@ const Layout = ({ children }) => {
       {showNav && (
         <header className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 shadow-sm">
           <nav className="container mx-auto px-6 py-4 flex items-center justify-between">
+            {/* Logo */}
             <Link
               to="/"
               className="text-2xl font-semibold text-gray-800 dark:text-gray-100 hover:text-teal-600 dark:hover:text-teal-400 transition-colors duration-200 flex items-center space-x-2"
@@ -59,39 +64,59 @@ const Layout = ({ children }) => {
               <LayoutDashboard className="w-6 h-6" />
               <span>HeyBuddy</span>
             </Link>
-            <div className="flex items-center space-x-12">
-              <div className="flex items-center space-x-8">
+
+            {/* Hamburger Menu Button (Visible on Mobile) */}
+            <button
+              onClick={toggleMenu}
+              className="md:hidden text-gray-700 dark:text-gray-300 hover:text-teal-600 dark:hover:text-teal-400 focus:outline-none"
+            >
+              {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
+            </button>
+
+            {/* Navigation Links and User Actions */}
+            <div
+              className={`${
+                isMenuOpen ? "flex" : "hidden"
+              } md:flex flex-col md:flex-row items-center space-y-4 md:space-y-0 md:space-x-12 absolute md:static top-16 left-0 right-0 bg-white dark:bg-gray-800 md:bg-transparent p-4 md:p-0 z-50 transition-all duration-300 ease-in-out`}
+            >
+              {/* Navigation Links */}
+              <div className="flex flex-col md:flex-row items-center space-y-4 md:space-y-0 md:space-x-8 w-full md:w-auto">
                 <Link
                   to="/"
-                  className="flex items-center space-x-2 text-gray-700 dark:text-gray-300 hover:text-teal-600 dark:hover:text-teal-400 transition-colors duration-200"
+                  className="flex items-center space-x-2 text-gray-700 dark:text-gray-300 hover:text-teal-600 dark:hover:text-teal-400 transition-colors duration-200 w-full md:w-auto"
+                  onClick={() => setIsMenuOpen(false)}
                 >
                   <Home className="w-5 h-5" />
                   <span>Home</span>
                 </Link>
                 <Link
                   to="/find_buddy"
-                  className="flex items-center space-x-2 text-gray-700 dark:text-gray-300 hover:text-teal-600 dark:hover:text-teal-400 transition-colors duration-200"
+                  className="flex items-center space-x-2 text-gray-700 dark:text-gray-300 hover:text-teal-600 dark:hover:text-teal-400 transition-colors duration-200 w-full md:w-auto"
+                  onClick={() => setIsMenuOpen(false)}
                 >
                   <Users className="w-5 h-5" />
                   <span>Find Buddy</span>
                 </Link>
                 <Link
                   to="/micro_project"
-                  className="flex items-center space-x-2 text-gray-700 dark:text-gray-300 hover:text-teal-600 dark:hover:text-teal-400 transition-colors duration-200"
+                  className="flex items-center space-x-2 text-gray-700 dark:text-gray-300 hover:text-teal-600 dark:hover:text-teal-400 transition-colors duration-200 w-full md:w-auto"
+                  onClick={() => setIsMenuOpen(false)}
                 >
                   <Briefcase className="w-5 h-5" />
                   <span>Micro Projects</span>
                 </Link>
                 <Link
                   to="/show_case"
-                  className="flex items-center space-x-2 text-gray-700 dark:text-gray-300 hover:text-teal-600 dark:hover:text-teal-400 transition-colors duration-200"
+                  className="flex items-center space-x-2 text-gray-700 dark:text-gray-300 hover:text-teal-600 dark:hover:text-teal-400 transition-colors duration-200 w-full md:w-auto"
+                  onClick={() => setIsMenuOpen(false)}
                 >
                   <GalleryHorizontalEnd className="w-5 h-5" />
                   <span>Showcase</span>
                 </Link>
                 <Link
                   to="/chat"
-                  className="flex items-center space-x-2 text-gray-700 dark:text-gray-300 hover:text-teal-600 dark:hover:text-teal-400 transition-colors duration-200"
+                  className="flex items-center space-x-2 text-gray-700 dark:text-gray-300 hover:text-teal-600 dark:hover:text-teal-400 transition-colors duration-200 w-full md:w-auto"
+                  onClick={() => setIsMenuOpen(false)}
                 >
                   <MessageSquare className="w-5 h-5" />
                   <span>Chat</span>
@@ -99,14 +124,17 @@ const Layout = ({ children }) => {
                 {isAuthenticated && (
                   <Link
                     to="/dashboard"
-                    className="flex items-center space-x-2 text-gray-700 dark:text-gray-300 hover:text-teal-600 dark:hover:text-teal-400 transition-colors duration-200"
+                    className="flex items-center space-x-2 text-gray-700 dark:text-gray-300 hover:text-teal-600 dark:hover:text-teal-400 transition-colors duration-200 w-full md:w-auto"
+                    onClick={() => setIsMenuOpen(false)}
                   >
                     <LayoutDashboard className="w-5 h-5" />
                     <span>Dashboard</span>
                   </Link>
                 )}
               </div>
-              <div className="flex items-center space-x-6">
+
+              {/* User Actions */}
+              <div className="flex flex-col md:flex-row items-center space-y-4 md:space-y-0 md:space-x-6 w-full md:w-auto">
                 {isAuthenticated ? (
                   <>
                     <span className="flex items-center space-x-2 text-gray-700 dark:text-gray-300">
@@ -115,7 +143,7 @@ const Layout = ({ children }) => {
                     </span>
                     <button
                       onClick={handleLogout}
-                      className="flex items-center space-x-2 text-sm text-gray-700 dark:text-gray-300 hover:text-red-600 dark:hover:text-red-400 transition-colors duration-200"
+                      className="flex items-center space-x-2 text-sm text-gray-700 dark:text-gray-300 hover:text-red-600 dark:hover:text-red-400 transition-colors duration-200 w-full md:w-auto"
                     >
                       <FaCog className="w-5 h-5" />
                       <span>Logout</span>
@@ -125,14 +153,16 @@ const Layout = ({ children }) => {
                   <>
                     <Link
                       to="/login"
-                      className="flex items-center space-x-2 text-sm text-gray-700 dark:text-gray-300 hover:text-teal-600 dark:hover:text-teal-400 transition-colors duration-200"
+                      className="flex items-center space-x-2 text-sm text-gray-700 dark:text-gray-300 hover:text-teal-600 dark:hover:text-teal-400 transition-colors duration-200 w-full md:w-auto"
+                      onClick={() => setIsMenuOpen(false)}
                     >
                       <Users className="w-5 h-5" />
                       <span>Login</span>
                     </Link>
                     <Link
                       to="/signup"
-                      className="flex items-center space-x-2 text-sm bg-teal-600 dark:bg-teal-500 text-white px-4 py-2 rounded-md hover:bg-teal-500 dark:hover:bg-teal-400 transition-colors duration-200"
+                      className="flex items-center space-x-2 text-sm bg-teal-600 dark:bg-teal-500 text-white px-4 py-2 rounded-md hover:bg-teal-500 dark:hover:bg-teal-400 transition-colors duration-200 w-full md:w-auto"
+                      onClick={() => setIsMenuOpen(false)}
                     >
                       <Users className="w-5 h-5" />
                       <span>Sign Up</span>
@@ -141,8 +171,7 @@ const Layout = ({ children }) => {
                 )}
                 <button
                   onClick={toggleTheme}
-                  className="p-2 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors duration-200"
-                  aria-label="Toggle theme"
+                  className="p-2 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors duration-200 w-full md:w-auto flex justify-center"
                 >
                   {isDarkMode ? <Sun size={20} /> : <Moon size={20} />}
                 </button>

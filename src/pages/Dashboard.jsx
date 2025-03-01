@@ -228,7 +228,7 @@ const Dashboard = () => {
           <h3 className="text-xl font-semibold text-gray-800 dark:text-gray-100 mb-4 text-center">
             Activity Heatmap
           </h3>
-          <div className="overflow-x-auto flex justify-center">
+          <div className="overflow-x-auto p-6 flex justify-center">
             <CalendarHeatmap
               startDate={new Date("2024-01-01")}
               endDate={new Date("2024-12-31")}
