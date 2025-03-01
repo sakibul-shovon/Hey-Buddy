@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Search, Plus, Link, X } from "lucide-react";
+import { Search, Plus, Link, X, FileText } from "lucide-react";
 
 const ShowcaseProjectsPage = () => {
   const [activeTab, setActiveTab] = useState("discover");
@@ -45,54 +45,123 @@ const ShowcaseProjectsPage = () => {
     return matchesSearch && matchesCategory;
   });
 
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    // Add logic here to handle form submission (e.g., API call)
+    setShowPostForm(false); // Close modal after submission
+  };
+
   return (
     <div className="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
       <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">Showcase Projects</h1>
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">
+          Showcase Projects
+        </h1>
         <button
           onClick={() => setShowPostForm(true)}
-          className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md flex items-center transition duration-200"
+          className="flex items-center space-x-2 bg-teal-600 dark:bg-teal-500 text-white px-6 py-3 rounded-lg hover:bg-teal-700 dark:hover:bg-teal-400 transition-colors duration-200 shadow-md"
         >
-          <Plus size={18} className="mr-2" />
-          Showcase Your Project
+          <Plus size={18} />
+          <span>Showcase Your Project</span>
         </button>
       </div>
 
       {showPostForm && (
-        <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center z-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md relative">
+        <div className="fixed inset-0 bg-gray-900 bg-opacity-60 flex items-center justify-center z-50">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full max-w-lg p-8 relative">
             <button
               onClick={() => setShowPostForm(false)}
-              className="absolute top-2 right-2 text-gray-600 hover:text-gray-800"
+              className="absolute top-4 right-4 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors"
             >
-              <X size={20} />
+              <X size={24} />
             </button>
-            <h2 className="text-lg font-bold mb-4">Post Your Project</h2>
-            <input
-              type="text"
-              placeholder="Project Title"
-              className="w-full mb-2 p-2 border rounded-md focus:ring-indigo-500 focus:border-indigo-500"
-            />
-            <textarea
-              placeholder="Project Description"
-              className="w-full mb-2 p-2 border rounded-md focus:ring-indigo-500 focus:border-indigo-500"
-            ></textarea>
-            <input
-              type="text"
-              placeholder="Project Link"
-              className="w-full mb-4 p-2 border rounded-md focus:ring-indigo-500 focus:border-indigo-500"
-            />
-            <button
-              onClick={() => setShowPostForm(false)}
-              className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md w-full transition duration-200"
-            >
-              Submit
-            </button>
+            <h2 className="text-2xl font-semibold text-gray-900 dark:text-gray-100 mb-6">
+              Showcase Your Project
+            </h2>
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <div>
+                <label
+                  htmlFor="title"
+                  className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+                >
+                  Project Title
+                </label>
+                <input
+                  type="text"
+                  id="title"
+                  className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 dark:bg-gray-700 dark:text-gray-200 text-gray-900 placeholder-gray-400 dark:placeholder-gray-500 transition duration-200"
+                  placeholder="Enter your project title"
+                  required
+                />
+              </div>
+              <div>
+                <label
+                  htmlFor="category"
+                  className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+                >
+                  Category
+                </label>
+                <select
+                  id="category"
+                  className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 dark:bg-gray-700 dark:text-gray-200 text-gray-900 placeholder-gray-400 dark:placeholder-gray-500 transition duration-200"
+                >
+                  {categories.map((cat) => (
+                    <option key={cat} value={cat}>
+                      {cat}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label
+                  htmlFor="description"
+                  className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+                >
+                  Description
+                </label>
+                <textarea
+                  id="description"
+                  className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 dark:bg-gray-700 dark:text-gray-200 text-gray-900 placeholder-gray-400 dark:placeholder-gray-500 transition duration-200 h-32 resize-y"
+                  placeholder="Briefly describe your project"
+                  required
+                ></textarea>
+              </div>
+              <div>
+                <label
+                  htmlFor="link"
+                  className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+                >
+                  Project Link
+                </label>
+                <input
+                  type="url"
+                  id="link"
+                  className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 dark:bg-gray-700 dark:text-gray-200 text-gray-900 placeholder-gray-400 dark:placeholder-gray-500 transition duration-200"
+                  placeholder="https://yourproject.com"
+                  required
+                />
+              </div>
+              <div className="flex justify-end space-x-4">
+                <button
+                  type="button"
+                  onClick={() => setShowPostForm(false)}
+                  className="px-6 py-2 bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-md hover:bg-gray-300 dark:hover:bg-gray-500 transition-colors duration-200"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-6 py-2 bg-teal-600 dark:bg-teal-500 text-white rounded-md hover:bg-teal-700 dark:hover:bg-teal-400 transition-colors duration-200 shadow-md"
+                >
+                  Submit Project
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}
 
-      <div className="bg-white shadow rounded-lg overflow-hidden">
+      <div className="bg-white dark:bg-gray-800 shadow rounded-lg overflow-hidden">
         <div className="p-6">
           <div className="relative w-full md:w-1/2 mb-6">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -101,22 +170,26 @@ const ShowcaseProjectsPage = () => {
             <input
               type="text"
               placeholder="Search projects..."
-              className="pl-10 pr-4 py-2 border border-gray-300 rounded-md w-full focus:ring-indigo-500 focus:border-indigo-500 shadow-sm"
+              className="pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md w-full focus:ring-teal-500 focus:border-teal-500 shadow-sm dark:bg-gray-700 dark:text-gray-200"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
           </div>
-          <ul className="divide-y divide-gray-200">
+          <ul className="divide-y divide-gray-200 dark:divide-gray-700">
             {filteredProjects.map((project) => (
               <li key={project.id} className="p-4">
-                <h3 className="text-lg font-bold text-gray-900">{project.title}</h3>
-                <p className="text-gray-700 mt-1">{project.description}</p>
-                <p className="text-sm text-gray-500 mt-1">
+                <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100">
+                  {project.title}
+                </h3>
+                <p className="text-gray-700 dark:text-gray-300">
+                  {project.description}
+                </p>
+                <p className="text-sm text-gray-500 dark:text-gray-400">
                   Created by: {project.username}
                 </p>
                 <a
                   href={project.link}
-                  className="text-indigo-600 hover:underline flex items-center mt-2"
+                  className="text-teal-600 dark:text-teal-400 hover:underline flex items-center mt-2"
                   target="_blank"
                   rel="noopener noreferrer"
                 >

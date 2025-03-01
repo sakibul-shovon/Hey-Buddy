@@ -10,7 +10,7 @@ import {
   MessageSquare,
   LayoutDashboard,
 } from "lucide-react";
-import { FaCog } from "react-icons/fa"; // Add this import for FaCog
+import { FaCog } from "react-icons/fa";
 import { AuthContext } from "../context/AuthContext";
 
 const Layout = ({ children }) => {
@@ -46,7 +46,7 @@ const Layout = ({ children }) => {
   return (
     <div
       className={`min-h-screen flex flex-col transition-colors duration-300 ${
-        isDarkMode ? "bg-gray-900 text-gray-200" : "bg-gray-100 text-gray-800"
+        isDarkMode ? "bg-gray-900 text-gray-200" : "bg-gray-100 text-gray-900"
       }`}
     >
       {showNav && (
@@ -66,35 +66,35 @@ const Layout = ({ children }) => {
               <div className="flex items-center space-x-8">
                 <Link
                   to="/"
-                  className="flex items-center space-x-2 text-gray-600 dark:text-gray-300 hover:text-teal-600 dark:hover:text-teal-400 transition-colors duration-200"
+                  className="flex items-center space-x-2 text-gray-700 dark:text-gray-300 hover:text-teal-600 dark:hover:text-teal-400 transition-colors duration-200"
                 >
                   <Home className="w-5 h-5" />
                   <span>Home</span>
                 </Link>
                 <Link
                   to="/find_buddy"
-                  className="flex items-center space-x-2 text-gray-600 dark:text-gray-300 hover:text-teal-600 dark:hover:text-teal-400 transition-colors duration-200"
+                  className="flex items-center space-x-2 text-gray-700 dark:text-gray-300 hover:text-teal-600 dark:hover:text-teal-400 transition-colors duration-200"
                 >
                   <Users className="w-5 h-5" />
                   <span>Find Buddy</span>
                 </Link>
                 <Link
                   to="/micro_project"
-                  className="flex items-center space-x-2 text-gray-600 dark:text-gray-300 hover:text-teal-600 dark:hover:text-teal-400 transition-colors duration-200"
+                  className="flex items-center space-x-2 text-gray-700 dark:text-gray-300 hover:text-teal-600 dark:hover:text-teal-400 transition-colors duration-200"
                 >
                   <Briefcase className="w-5 h-5" />
                   <span>Micro Projects</span>
                 </Link>
                 <Link
                   to="/show_case"
-                  className="flex items-center space-x-2 text-gray-600 dark:text-gray-300 hover:text-teal-600 dark:hover:text-teal-400 transition-colors duration-200"
+                  className="flex items-center space-x-2 text-gray-700 dark:text-gray-300 hover:text-teal-600 dark:hover:text-teal-400 transition-colors duration-200"
                 >
                   <GalleryHorizontalEnd className="w-5 h-5" />
                   <span>Showcase</span>
                 </Link>
                 <Link
                   to="/chat"
-                  className="flex items-center space-x-2 text-gray-600 dark:text-gray-300 hover:text-teal-600 dark:hover:text-teal-400 transition-colors duration-200"
+                  className="flex items-center space-x-2 text-gray-700 dark:text-gray-300 hover:text-teal-600 dark:hover:text-teal-400 transition-colors duration-200"
                 >
                   <MessageSquare className="w-5 h-5" />
                   <span>Chat</span>
@@ -102,7 +102,7 @@ const Layout = ({ children }) => {
                 {isAuthenticated && (
                   <Link
                     to="/dashboard"
-                    className="flex items-center space-x-2 text-gray-600 dark:text-gray-300 hover:text-teal-600 dark:hover:text-teal-400 transition-colors duration-200"
+                    className="flex items-center space-x-2 text-gray-700 dark:text-gray-300 hover:text-teal-600 dark:hover:text-teal-400 transition-colors duration-200"
                   >
                     <LayoutDashboard className="w-5 h-5" />
                     <span>Dashboard</span>
@@ -114,13 +114,13 @@ const Layout = ({ children }) => {
               <div className="flex items-center space-x-6">
                 {isAuthenticated ? (
                   <>
-                    <span className="flex items-center space-x-2 text-gray-600 dark:text-gray-300">
+                    <span className="flex items-center space-x-2 text-gray-700 dark:text-gray-300">
                       <Users className="w-5 h-5" />
                       <span>Welcome, {username}</span>
                     </span>
                     <button
                       onClick={handleLogout}
-                      className="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-300 hover:text-red-600 dark:hover:text-red-400 transition-colors duration-200"
+                      className="flex items-center space-x-2 text-sm text-gray-700 dark:text-gray-300 hover:text-red-600 dark:hover:text-red-400 transition-colors duration-200"
                     >
                       <FaCog className="w-5 h-5" />
                       <span>Logout</span>
@@ -130,7 +130,7 @@ const Layout = ({ children }) => {
                   <>
                     <Link
                       to="/login"
-                      className="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-300 hover:text-teal-600 dark:hover:text-teal-400 transition-colors duration-200"
+                      className="flex items-center space-x-2 text-sm text-gray-700 dark:text-gray-300 hover:text-teal-600 dark:hover:text-teal-400 transition-colors duration-200"
                     >
                       <Users className="w-5 h-5" />
                       <span>Login</span>
