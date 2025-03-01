@@ -35,7 +35,8 @@ const Dashboard = () => {
   const fileInputRef = useRef(null);
   const navigate = useNavigate();
   const { logout, username } = useContext(AuthContext);
-  const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
+  // Remove trailing slash to avoid double slashes in API endpoints
+  const API_URL = (import.meta.env.VITE_API_URL || "http://localhost:8000").replace(/\/$/, "");
   const authToken = localStorage.getItem("authToken");
 
   const heatmapData = [
@@ -61,6 +62,10 @@ const Dashboard = () => {
             Authorization: `Bearer ${authToken}`,
           },
         });
+        // Check if response is OK before parsing JSON
+        if (!response.ok) {
+          throw new Error(`Error ${response.status}: ${response.statusText}`);
+        }
         const data = await response.json();
         console.log("Profile Picture Data:", data);
         if (data?.profilePicture?.url) {
