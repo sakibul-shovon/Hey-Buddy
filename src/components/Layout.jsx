@@ -39,8 +39,8 @@ const Layout = ({ children }) => {
   const toggleTheme = () => setIsDarkMode((prev) => !prev);
 
   const handleLogout = () => {
-    logout();
-    navigate("/");
+    logout();  // Clear authentication data
+    navigate("/");  // Redirect to Landing Page after logout
   };
 
   return (
