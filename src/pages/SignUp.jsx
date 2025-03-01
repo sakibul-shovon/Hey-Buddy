@@ -5,12 +5,18 @@ import { AuthContext } from "../context/AuthContext";
 
 function Signup() {
   const navigate = useNavigate();
-  const { login } = useContext(AuthContext);
+  const { isAuthenticated, login } = useContext(AuthContext); // Access Auth Context
   const [email, setEmail] = useState("");
-  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const [loading, setLoading] = useState(false);
+
+  // Redirect to landing page if already authenticated
+  // useEffect(() => {
+  //   if (isAuthenticated) {
+  //     navigate("/"); // Redirect to Landing Page
+  //   }
+  // }, [isAuthenticated, navigate]);
 
   const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
 
@@ -19,25 +25,24 @@ function Signup() {
     setErrorMessage("");
     setLoading(true);
 
-    if (!email || !password || !username) {
+    if (!email || !password) {
       setErrorMessage("⚠️ All fields are required!");
       setLoading(false);
       return;
     }
 
     try {
-      const res = await axios.post(`${API_URL}/signup`, { email, username, password });
+      const res = await axios.post(`${API_URL}/signup`, { email, password });
 
-      console.log("✅ Server Response:", res.data);
-
-      if (res.data === "exist") {
-        setErrorMessage("⚠️ User already exists. Try logging in.");
-      } else if (res.data === "notexist") {
-        login("dummy-token", username);
+      if (res.data.error) {
+        setErrorMessage(`⚠️ ${res.data.error}`);
+      } else if (res.data.token) {
+        // ✅ Save token and user email in context
+        login(res.data.token, res.data.email);
         alert("✅ Signup successful!");
         navigate("/dashboard");
       } else {
-        setErrorMessage("❌ Unexpected response: " + res.data);
+        setErrorMessage("❌ Unexpected response. Please try again.");
       }
     } catch (error) {
       console.error("❌ Signup Error:", error);
@@ -75,24 +80,6 @@ function Signup() {
               placeholder="Enter your email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              required
-            />
-          </div>
-
-          <div>
-            <label
-              htmlFor="username"
-              className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-            >
-              Username
-            </label>
-            <input
-              type="text"
-              id="username"
-              className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 dark:bg-gray-700 dark:text-gray-200 text-gray-900 placeholder-gray-400 dark:placeholder-gray-500 transition duration-200"
-              placeholder="Choose a username"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
               required
             />
           </div>
