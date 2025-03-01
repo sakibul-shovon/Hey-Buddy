@@ -468,7 +468,6 @@ const Dashboard = () => {
             Activity Heatmap
           </h3>
           <div className="overflow-x-auto p-6 flex justify-center">
-<<<<<<< HEAD
             <div className="w-full max-w-3xl">
               <CalendarHeatmap
                 startDate={new Date("2024-01-01")}
@@ -480,17 +479,6 @@ const Dashboard = () => {
                 style={{ width: "100%", margin: "auto" }}
               />
             </div>
-=======
-            <CalendarHeatmap
-              startDate={new Date("2024-01-01")}
-              endDate={new Date("2024-12-31")}
-              values={heatmapData}
-              classForValue={(value) =>
-                value ? `color-scale-${value.count}` : "color-empty"
-              }
-              style={{ width: "100%", maxWidth: "600px", margin: "auto" }}
-            />
->>>>>>> 43993bb668ba5f2ac32494dd4fe7a915a9fa607d
           </div>
         </div>
       </div>

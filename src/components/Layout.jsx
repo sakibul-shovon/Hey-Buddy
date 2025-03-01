@@ -42,14 +42,9 @@ const Layout = ({ children }) => {
   const toggleTheme = () => setIsDarkMode((prev) => !prev);
   const toggleMenu = () => setIsMenuOpen((prev) => !prev);
   const handleLogout = () => {
-<<<<<<< HEAD
-    logout();  // Clear authentication data
-    navigate("/");  // Redirect to Landing Page after logout
-=======
     logout();
     navigate("/");
     setIsMenuOpen(false); // Close menu on logout
->>>>>>> 43993bb668ba5f2ac32494dd4fe7a915a9fa607d
   };
 
   return (
