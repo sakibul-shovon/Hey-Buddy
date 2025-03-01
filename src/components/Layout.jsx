@@ -52,7 +52,6 @@ const Layout = ({ children }) => {
       {showNav && (
         <header className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 shadow-sm">
           <nav className="container mx-auto px-6 py-4 flex items-center justify-between">
-            {/* Logo */}
             <Link
               to="/"
               className="text-2xl font-semibold text-gray-800 dark:text-gray-100 hover:text-teal-600 dark:hover:text-teal-400 transition-colors duration-200 flex items-center space-x-2"
@@ -60,8 +59,6 @@ const Layout = ({ children }) => {
               <LayoutDashboard className="w-6 h-6" />
               <span>HeyBuddy</span>
             </Link>
-
-            {/* Navigation Links */}
             <div className="flex items-center space-x-12">
               <div className="flex items-center space-x-8">
                 <Link
@@ -109,8 +106,6 @@ const Layout = ({ children }) => {
                   </Link>
                 )}
               </div>
-
-              {/* User Actions */}
               <div className="flex items-center space-x-6">
                 {isAuthenticated ? (
                   <>
