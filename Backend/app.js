@@ -6,6 +6,7 @@ import dotenv from "dotenv";
 import jwt from "jsonwebtoken";
 import cloudinary from "cloudinary";
 import { UserCollection, ProfilePictures } from "./models/User.js";
+import projectRoutes from './routes/projectRoutes.js';
 
 dotenv.config();
 
@@ -219,6 +220,8 @@ app.delete("/api/user/profile", authenticateUser, async (req, res) => {
     res.status(500).json({ error: "Failed to delete profile picture" });
   }
 });
+
+app.use('/api', projectRoutes);
 
 /* ----- Server Start ----- */
 const PORT = process.env.PORT || 8000;
