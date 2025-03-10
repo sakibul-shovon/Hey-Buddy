@@ -4,6 +4,7 @@ import cloudinary from "cloudinary";
 
 const router = express.Router();
 
+
 // ✅ Configure Cloudinary
 cloudinary.v2.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,

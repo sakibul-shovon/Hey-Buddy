@@ -3,7 +3,7 @@ import io from "socket.io-client";
 import { AuthContext } from "../context/AuthContext";
 import { Edit, Trash2, Eye, Send, User, ChevronDown } from "lucide-react";
 
-const socket = io("http://localhost:5000"); // Ensure this matches your backend port
+const socket = io("http://localhost:8000"); // Ensure this matches your backend port
 
 const Chat = () => {
   const { username } = useContext(AuthContext);

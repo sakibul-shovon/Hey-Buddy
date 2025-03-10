@@ -13,6 +13,7 @@ import {
   FaCamera,
   FaSun,
   FaMoon,
+  FaCreditCard, // New icon for payment
 } from "react-icons/fa";
 import CalendarHeatmap from "react-calendar-heatmap";
 import "react-calendar-heatmap/dist/styles.css";
@@ -35,7 +36,6 @@ const Dashboard = () => {
   const fileInputRef = useRef(null);
   const navigate = useNavigate();
   const { logout, username } = useContext(AuthContext);
-  // Remove trailing slash to avoid double slashes in API endpoints
   const API_URL = (import.meta.env.VITE_API_URL || "http://localhost:8000").replace(/\/$/, "");
   const authToken = localStorage.getItem("authToken");
 
@@ -47,7 +47,6 @@ const Dashboard = () => {
     { date: "2024-02-20", count: 7 },
   ];
 
-  // Fetch Profile Picture on Load
   useEffect(() => {
     if (!authToken) {
       setError("User not logged in.");
@@ -62,12 +61,10 @@ const Dashboard = () => {
             Authorization: `Bearer ${authToken}`,
           },
         });
-        // Check if response is OK before parsing JSON
         if (!response.ok) {
           throw new Error(`Error ${response.status}: ${response.statusText}`);
         }
         const data = await response.json();
-        console.log("Profile Picture Data:", data);
         if (data?.profilePicture?.url) {
           setUploadedImage(data.profilePicture.url);
         } else {
@@ -81,7 +78,6 @@ const Dashboard = () => {
     fetchProfilePicture();
   }, [authToken, API_URL]);
 
-  // Update dark mode on document root and persist preference
   useEffect(() => {
     if (darkMode) {
       document.documentElement.classList.add("dark");
@@ -94,7 +90,6 @@ const Dashboard = () => {
 
   const toggleDarkMode = () => setDarkMode((prev) => !prev);
 
-  // Handle File Selection
   const handleFileChange = (e) => {
     if (e.target.files && e.target.files[0]) {
       setSelectedFile(e.target.files[0]);
@@ -103,7 +98,6 @@ const Dashboard = () => {
     }
   };
 
-  // Handle Profile Picture Upload
   const handleUpload = async () => {
     if (!selectedFile) {
       setError("⚠️ Please select an image before uploading.");
@@ -167,7 +161,6 @@ const Dashboard = () => {
     }
   };
 
-  // Handle Remove Profile Picture
   const handleRemoveProfilePicture = async () => {
     if (!authToken) {
       setError("⚠️ User not logged in.");
@@ -199,7 +192,7 @@ const Dashboard = () => {
       <div
         className={`fixed inset-y-0 left-0 transform ${
           isDrawerOpen ? "translate-x-0" : "-translate-x-full"
-        } w-72 bg-gray-800 dark:bg-gray-900 text-white shadow-2xl transition-transform duration-300 ease-in-out z-50`}
+        } w-72 bg-gray-800 dark:bg-gray-900 text-white shadow-2xl transition-transform duration-300 ease-in-out z-50 overflow-y-auto`} // Added overflow-y-auto
       >
         <div className="p-6 flex flex-col h-full">
           <div className="flex items-center justify-between mb-8">
@@ -262,6 +255,13 @@ const Dashboard = () => {
             <li className="flex items-center space-x-3 cursor-pointer hover:bg-gray-700 p-2 rounded-md transition-colors">
               <FaQuestionCircle className="text-teal-400" />
               <span>Help</span>
+            </li>
+            <li
+              onClick={() => navigate("/payment")}
+              className="flex items-center space-x-3 cursor-pointer hover:bg-gray-700 p-2 rounded-md transition-colors"
+            >
+              <FaCreditCard className="text-teal-400" /> {/* Updated icon */}
+              <span>Payments</span>
             </li>
             <li className="flex items-center space-x-3 cursor-pointer hover:bg-gray-700 p-2 rounded-md transition-colors">
               <FaCog className="text-teal-400" />

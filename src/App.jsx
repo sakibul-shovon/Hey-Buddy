@@ -11,6 +11,7 @@ import MicroProjectsPage from "./pages/MicroProjectsPage";
 import ShowcaseProjectsPage from "./pages/ShowcaseProjectsPage";
 import Dashboard from "./pages/Dashboard";
 import Chat from "./pages/Chat"; // Add this import
+import Payment from "./pages/Payments";
 
 function App() {
   return (
@@ -40,6 +41,10 @@ function App() {
             <Route
               path="/chat"
               element={<ProtectedRoute><Layout><Chat /></Layout></ProtectedRoute>}
+            />
+            <Route
+              path="/payment"
+              element={<ProtectedRoute><Layout><Payment /></Layout></ProtectedRoute>}
             />
           </Routes>
         </Router>

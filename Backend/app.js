@@ -5,11 +5,23 @@ import bcrypt from "bcrypt";
 import dotenv from "dotenv";
 import jwt from "jsonwebtoken";
 import cloudinary from "cloudinary";
+import { createServer } from "http"; // Import createServer for Socket.IO
+import { Server } from "socket.io"; // Import Server from socket.io
 import { UserCollection, ProfilePictures } from "./models/User.js";
+import userRoutes from './routes/userRoutes.js'; // Import user routes
+import projectRoutes from './routes/projectRoutes.js'; // Import project routes
 
 dotenv.config();
 
 const app = express();
+const server = createServer(app); // Create an HTTP server for Socket.IO
+const io = new Server(server, {
+  cors: {
+    origin: "http://localhost:5173", // Allow frontend origin
+    methods: ["GET", "POST"],
+  },
+});
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(
@@ -44,8 +56,6 @@ const authenticateUser = (req, res, next) => {
     return res.status(401).json({ error: "Unauthorized: No token provided" });
   }
 
-  const jwtSecret = process.env.JWT_SECRET;  // Ensure this is set in your .env file
-
   try {
     // Verify the token using jwtSecret from environment
     const decoded = jwt.verify(token, jwtSecret);
@@ -56,7 +66,6 @@ const authenticateUser = (req, res, next) => {
     return res.status(403).json({ error: "Invalid or expired token" });  // Invalid or expired token error
   }
 };
-
 
 /* ----- User Authentication Routes ----- */
 
@@ -189,8 +198,6 @@ app.get("/api/cloudinary-signature", authenticateUser, (req, res) => {
   }
 });
 
-
-
 // ✅ Delete Profile Picture from Cloudinary & MongoDB
 app.delete("/api/user/profile", authenticateUser, async (req, res) => {
   try {
@@ -220,8 +227,23 @@ app.delete("/api/user/profile", authenticateUser, async (req, res) => {
   }
 });
 
+// Use user routes
+app.use('/api', userRoutes);
+
+// Use project routes
+app.use('/api', projectRoutes);
+
+/* ----- Socket.IO Setup ----- */
+io.on("connection", (socket) => {
+  console.log("A user connected:", socket.id);
+
+  socket.on("disconnect", () => {
+    console.log("User disconnected:", socket.id);
+  });
+});
+
 /* ----- Server Start ----- */
 const PORT = process.env.PORT || 8000;
-app.listen(PORT, () => {
+server.listen(PORT, () => {
   console.log(`🚀 Server running on http://localhost:${PORT}`);
 });

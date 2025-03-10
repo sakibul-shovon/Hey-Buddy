@@ -1,11 +1,12 @@
-import React, { useState } from "react";
-import { Search, Plus, Link, X, FileText } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import { Search, Plus, Link, X } from "lucide-react";
 
 const ShowcaseProjectsPage = () => {
   const [activeTab, setActiveTab] = useState("discover");
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [showPostForm, setShowPostForm] = useState(false);
+  const [projects, setProjects] = useState([]);
 
   const categories = [
     "All",
@@ -18,38 +19,63 @@ const ShowcaseProjectsPage = () => {
     "Other",
   ];
 
-  const sampleProjects = [
-    {
-      id: 1,
-      title: "Project Alpha",
-      category: "Web Development",
-      description: "A modern web project with full-stack capabilities.",
-      link: "https://projectalpha.com",
-      username: "johndoe",
-    },
-    {
-      id: 2,
-      title: "AI Research",
-      category: "AI/ML",
-      description: "Cutting-edge research in artificial intelligence.",
-      link: "https://airesearchhub.com",
-      username: "janesmith",
-    },
-  ];
+  // Fetch projects from the database
+  useEffect(() => {
+    fetchProjects();
+  }, []);
 
-  const filteredProjects = sampleProjects.filter((project) => {
+  const fetchProjects = async () => {
+    try {
+      const response = await fetch('http://localhost:8000/api/projects'); // Update this URL
+      if (response.ok) {
+        const data = await response.json();
+        setProjects(data);
+      } else {
+        console.error('Failed to fetch projects:', response.statusText);
+      }
+    } catch (error) {
+      console.error('Error fetching projects:', error);
+    }
+  };
+
+  // Handle form submission
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const projectData = {
+      title: e.target.title.value,
+      category: e.target.category.value,
+      description: e.target.description.value,
+      link: e.target.link.value,
+    };
+
+    try {
+      const response = await fetch('http://localhost:8000/api/projects', { // Update this URL
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(projectData),
+      });
+
+      if (response.ok) {
+        setShowPostForm(false);
+        fetchProjects(); // Refresh the project list after submission
+      } else {
+        console.error('Failed to submit project:', response.statusText);
+      }
+    } catch (error) {
+      console.error('Error submitting project:', error);
+    }
+  };
+
+  // Filter projects based on search and category
+  const filteredProjects = projects.filter((project) => {
     const matchesSearch =
       project.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       project.description.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesCategory = selectedCategory === "All" || project.category === selectedCategory;
     return matchesSearch && matchesCategory;
   });
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    // Add logic here to handle form submission (e.g., API call)
-    setShowPostForm(false); // Close modal after submission
-  };
 
   return (
     <div className="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
@@ -89,6 +115,7 @@ const ShowcaseProjectsPage = () => {
                 <input
                   type="text"
                   id="title"
+                  name="title"
                   className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 dark:bg-gray-700 dark:text-gray-200 text-gray-900 placeholder-gray-400 dark:placeholder-gray-500 transition duration-200"
                   placeholder="Enter your project title"
                   required
@@ -103,6 +130,7 @@ const ShowcaseProjectsPage = () => {
                 </label>
                 <select
                   id="category"
+                  name="category"
                   className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 dark:bg-gray-700 dark:text-gray-200 text-gray-900 placeholder-gray-400 dark:placeholder-gray-500 transition duration-200"
                 >
                   {categories.map((cat) => (
@@ -121,6 +149,7 @@ const ShowcaseProjectsPage = () => {
                 </label>
                 <textarea
                   id="description"
+                  name="description"
                   className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 dark:bg-gray-700 dark:text-gray-200 text-gray-900 placeholder-gray-400 dark:placeholder-gray-500 transition duration-200 h-32 resize-y"
                   placeholder="Briefly describe your project"
                   required
@@ -136,6 +165,7 @@ const ShowcaseProjectsPage = () => {
                 <input
                   type="url"
                   id="link"
+                  name="link"
                   className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 dark:bg-gray-700 dark:text-gray-200 text-gray-900 placeholder-gray-400 dark:placeholder-gray-500 transition duration-200"
                   placeholder="https://yourproject.com"
                   required
@@ -177,7 +207,7 @@ const ShowcaseProjectsPage = () => {
           </div>
           <ul className="divide-y divide-gray-200 dark:divide-gray-700">
             {filteredProjects.map((project) => (
-              <li key={project.id} className="p-4">
+              <li key={project._id} className="p-4">
                 <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100">
                   {project.title}
                 </h3>
@@ -185,7 +215,7 @@ const ShowcaseProjectsPage = () => {
                   {project.description}
                 </p>
                 <p className="text-sm text-gray-500 dark:text-gray-400">
-                  Created by: {project.username}
+                  Category: {project.category}
                 </p>
                 <a
                   href={project.link}
