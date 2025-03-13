@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
@@ -11,15 +11,15 @@ function Login() {
     const [errorMessage, setErrorMessage] = useState("");
     const [loading, setLoading] = useState(false);
 
-    //Redirect to landing page if already authenticated
-    // useEffect(() => {
-    //     if (isAuthenticated) {
-    //         navigate("/"); // Redirect to Landing Page
-    //     }
-    // }, [isAuthenticated, navigate]);
+    // Redirect to dashboard page if already authenticated
+    useEffect(() => {
+        if (isAuthenticated) {
+            navigate("/dashboard"); // Redirect to Dashboard Page
+        }
+    }, [isAuthenticated, navigate]);
 
-    // // If the user is authenticated, return null to avoid rendering the Login page
-    // if (isAuthenticated) return null;
+    // If the user is authenticated, return null to avoid rendering the Login page
+    if (isAuthenticated) return null;
 
     const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
 
@@ -42,6 +42,7 @@ function Login() {
             } else if (res.data.token) {
                 // ✅ Save token and user email in context
                 login(res.data.token, res.data.email);
+                sessionStorage.setItem('loggedIn', 'true'); // Set loggedIn flag
                 alert("✅ Login successful!");
                 navigate("/dashboard");
             } else {
