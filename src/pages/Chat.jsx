@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useContext } from "react";
 import io from "socket.io-client";
 import { AuthContext } from "../context/AuthContext";
-import { Edit, Trash2, Eye, Send, User, ChevronDown } from "lucide-react";
+import { Send, User } from "lucide-react";
 
-const socket = io("http://localhost:5000"); // Ensure this matches your backend port
+const socket = io("http://localhost:5000");
 
 const Chat = () => {
   const { username } = useContext(AuthContext);
@@ -11,14 +11,13 @@ const Chat = () => {
   const [messages, setMessages] = useState([]);
   const [users, setUsers] = useState([]);
   const [selectedUser, setSelectedUser] = useState(null);
-  const [editingMessageId, setEditingMessageId] = useState(null);
-  const [editText, setEditText] = useState("");
 
   useEffect(() => {
+    console.log("Joining chat as:", username);
     socket.emit("join", username);
 
     socket.on("userList", (userList) => {
-      console.log("Received userList:", userList);
+      console.log("Updated Online Users:", userList);
       setUsers(userList.filter((u) => u !== username));
     });
 
@@ -27,114 +26,76 @@ const Chat = () => {
     });
 
     socket.on("privateMessage", (msg) => {
-      setMessages((prev) => [...prev, msg]);
-      if (msg.recipient === username) {
-        socket.emit("markAsSeen", msg.id);
-      }
-    });
-
-    socket.on("messageSeen", (messageId) => {
-      setMessages((prev) =>
-        prev.map((msg) => (msg.id === messageId ? { ...msg, seen: true } : msg))
-      );
-    });
-
-    socket.on("messageUnsent", (messageId) => {
-      setMessages((prev) => prev.filter((msg) => msg.id !== messageId));
-    });
-
-    socket.on("messageEdited", (updatedMessage) => {
-      setMessages((prev) =>
-        prev.map((msg) => (msg.id === updatedMessage.id ? updatedMessage : msg))
-      );
-    });
-
-    socket.on("messageDeleted", (messageId) => {
-      setMessages((prev) => prev.filter((msg) => msg.id !== messageId));
+      console.log("New message received:", msg);
+      setMessages((prevMessages) => {
+        const messageExists = prevMessages.some((m) => m.timestamp === msg.timestamp);
+        return messageExists ? prevMessages : [...prevMessages, msg];
+      });
     });
 
     return () => {
       socket.off("userList");
       socket.off("messageHistory");
       socket.off("privateMessage");
-      socket.off("messageSeen");
-      socket.off("messageUnsent");
-      socket.off("messageEdited");
-      socket.off("messageDeleted");
     };
   }, [username]);
 
   const sendMessage = (e) => {
     e.preventDefault();
     if (message.trim() && selectedUser) {
-      socket.emit("sendPrivateMessage", {
+      const newMessage = {
+        sender: username,
         recipient: selectedUser,
         text: message,
-      });
-      setMessage("");
+        timestamp: new Date().toISOString(),
+      };
+
+      socket.emit("sendPrivateMessage", newMessage);
+      setMessage(""); // ✅ Clears input without causing duplicate messages
     }
-  };
-
-  const unsendMessage = (messageId) => {
-    socket.emit("unsendMessage", messageId);
-  };
-
-  const editMessage = (messageId, currentText) => {
-    setEditingMessageId(messageId);
-    setEditText(currentText);
-  };
-
-  const saveEditedMessage = (e) => {
-    e.preventDefault();
-    if (editText.trim() && editingMessageId) {
-      socket.emit("editMessage", { messageId: editingMessageId, newText: editText });
-      setEditingMessageId(null);
-      setEditText("");
-    }
-  };
-
-  const deleteMessage = (messageId) => {
-    socket.emit("deleteMessage", messageId);
   };
 
   return (
-    <div className="container mx-auto max-w-5xl px-6 py-8 h-screen flex flex-col font-mono bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
-      <h1 className="text-4xl font-bold mb-8 text-teal-600 dark:text-teal-400 tracking-tight">
+    <div className="container mx-auto max-w-5xl px-4 py-6 min-h-screen flex flex-col">
+      <h1 className="text-3xl sm:text-4xl font-bold mb-6 text-teal-600 dark:text-teal-400 tracking-tight text-center sm:text-left">
         // Private Chat Terminal
       </h1>
-      <div className="flex flex-1 gap-6">
+
+      <div className="flex flex-1 gap-4 sm:gap-6 flex-col sm:flex-row">
         {/* User List */}
-        <div className="w-1/3 bg-gray-200 dark:bg-gray-800 p-4 rounded-xl shadow-lg border border-gray-300 dark:border-gray-700">
-          <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-200 mb-4 flex items-center space-x-2">
-            <User size={20} className="text-green-500 dark:text-green-400" />
-            <span>Online Coders</span>
+        <div className="w-full sm:w-1/3 bg-gray-200 dark:bg-gray-800 p-4 rounded-lg shadow-lg border border-gray-300 dark:border-gray-700">
+          <h2 className="text-lg sm:text-xl font-semibold text-gray-800 dark:text-gray-200 mb-4 flex items-center space-x-2">
+            <User size={18} className="text-green-500 dark:text-green-400" />
+            <span>Online Users</span>
           </h2>
           <ul className="space-y-3">
             {users.map((user) => (
               <li
                 key={user}
                 onClick={() => setSelectedUser(user)}
-                className={`flex items-center space-x-2 p-3 rounded-lg cursor-pointer transition-all duration-200 ${
+                className={`p-3 rounded-lg cursor-pointer transition-all duration-200 flex items-center ${
                   selectedUser === user
-                    ? "bg-teal-100 dark:bg-teal-700 text-teal-800 dark:text-teal-200 shadow-md"
-                    : "text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-700 hover:text-teal-600 dark:hover:text-teal-400"
+                    ? "bg-teal-500 text-white shadow-md"
+                    : "hover:bg-gray-300 dark:hover:bg-gray-700"
                 }`}
               >
-                <span className="w-2 h-2 bg-green-500 rounded-full"></span>
+                <span className="w-2 h-2 bg-green-500 rounded-full mr-2"></span>
                 <span>{user}</span>
               </li>
             ))}
           </ul>
         </div>
+
         {/* Chat Area */}
-        <div className="w-2/3 flex flex-col bg-gradient-to-br from-gray-50 to-gray-200 dark:from-gray-800 dark:to-gray-900 rounded-xl shadow-lg border border-gray-300 dark:border-gray-700">
-          <div className="p-4 bg-gray-300 dark:bg-gray-700 rounded-t-xl flex items-center space-x-2">
-            <span className="text-lg font-semibold text-gray-800 dark:text-gray-200">
-              {selectedUser ? `> Chatting with ${selectedUser}` : "> Select a user"}
-            </span>
-            {selectedUser && <ChevronDown size={20} className="text-gray-600 dark:text-gray-400" />}
+        <div className="w-full sm:w-2/3 flex flex-col bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-300 dark:border-gray-700">
+          <div className="p-4 bg-gray-300 dark:bg-gray-700 rounded-t-lg flex items-center justify-between">
+            <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-200">
+              {selectedUser ? `Chatting with ${selectedUser}` : "Select a user"}
+            </h2>
           </div>
-          <div className="flex-1 p-4 overflow-y-auto">
+
+          {/* Chat Messages */}
+          <div className="flex-1 overflow-y-auto p-4 space-y-3" style={{ minHeight: "300px" }}>
             {selectedUser ? (
               messages
                 .filter(
@@ -144,88 +105,43 @@ const Chat = () => {
                 )
                 .map((msg) => (
                   <div
-                    key={msg.id}
-                    className={`mb-4 flex ${
+                    key={msg.timestamp}
+                    className={`flex ${
                       msg.sender === username ? "justify-end" : "justify-start"
                     }`}
                   >
                     <div
-                      className={`max-w-xs p-3 rounded-lg shadow-md transition-all duration-200 ${
+                      className={`max-w-xs p-3 rounded-lg shadow-md ${
                         msg.sender === username
                           ? "bg-teal-600 dark:bg-teal-500 text-white"
                           : "bg-gray-300 dark:bg-gray-700 text-gray-900 dark:text-gray-200"
                       }`}
                     >
-                      {editingMessageId === msg.id ? (
-                        <form onSubmit={saveEditedMessage} className="flex gap-2">
-                          <input
-                            type="text"
-                            value={editText}
-                            onChange={(e) => setEditText(e.target.value)}
-                            className="flex-1 p-2 bg-gray-100 dark:bg-gray-600 border border-gray-300 dark:border-gray-500 rounded-md text-gray-900 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-teal-400"
-                          />
-                          <button
-                            type="submit"
-                            className="text-teal-200 hover:text-teal-300 transition-colors"
-                          >
-                            Save
-                          </button>
-                        </form>
-                      ) : (
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <span className="font-semibold">
-                              {msg.user === username ? "You" : msg.user}:
-                            </span>{" "}
-                            <span>{msg.text}</span>
-                            <div className="text-xs text-gray-400 dark:text-gray-500 mt-1">
-                              {msg.timestamp} {msg.seen && msg.sender === username ? "(Seen)" : ""}
-                            </div>
-                          </div>
-                          {msg.sender === username && (
-                            <div className="flex space-x-2 ml-2">
-                              <button
-                                onClick={() => editMessage(msg.id, msg.text)}
-                                className="text-gray-200 dark:text-gray-400 hover:text-teal-300 dark:hover:text-teal-200 transition-colors"
-                              >
-                                <Edit size={16} />
-                              </button>
-                              <button
-                                onClick={() => deleteMessage(msg.id)}
-                                className="text-gray-200 dark:text-gray-400 hover:text-red-500 dark:hover:text-red-400 transition-colors"
-                              >
-                                <Trash2 size={16} />
-                              </button>
-                              <button
-                                onClick={() => unsendMessage(msg.id)}
-                                className="text-gray-200 dark:text-gray-400 hover:text-yellow-500 dark:hover:text-yellow-400 transition-colors"
-                              >
-                                <Eye size={16} />
-                              </button>
-                            </div>
-                          )}
-                        </div>
-                      )}
+                      <span className="font-semibold">
+                        {msg.sender === username ? "You" : msg.sender}:
+                      </span>{" "}
+                      <span>{msg.text}</span>
+                      <div className="text-xs text-gray-400 dark:text-gray-500 mt-1">
+                        {new Date(msg.timestamp).toLocaleTimeString()}
+                      </div>
                     </div>
                   </div>
                 ))
             ) : (
-              <p className="text-gray-500 dark:text-gray-400 text-center mt-10">
+              <p className="text-gray-500 dark:text-gray-400 text-center">
                 // Select a coder to start chatting
               </p>
             )}
           </div>
-          <form onSubmit={sendMessage} className="p-4 bg-gray-200 dark:bg-gray-800 rounded-b-xl flex gap-2">
+
+          {/* Chat Input */}
+          <form onSubmit={sendMessage} className="p-4 bg-gray-200 dark:bg-gray-800 border-t border-gray-300 dark:border-gray-700 flex gap-2 sticky bottom-0">
             <input
               type="text"
               value={message}
               onChange={(e) => setMessage(e.target.value)}
-              placeholder={
-                selectedUser
-                  ? `> ${selectedUser}: `
-                  : "// Select a user first"
-              }
-              className="flex-1 p-3 bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 text-gray-900 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-500 transition-all duration-200"
+              placeholder={selectedUser ? `Message ${selectedUser}` : "Select a user first"}
+              className="flex-1 p-3 bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 text-gray-900 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-500"
               disabled={!selectedUser}
             />
             <button

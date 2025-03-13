@@ -31,16 +31,16 @@ mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => console.log("✅ MongoDB Connected"))
   .catch((err) => console.error("❌ MongoDB Connection Error:", err));
 
-// ✅ Store connected users
+// ✅ Store connected users (Username → { socketId })
 const users = {};
 
-// ✅ API to fetch stored messages (Test in browser)
+// ✅ API to fetch stored messages
 app.get("/api/messages", async (req, res) => {
   try {
     const messages = await Message.find().sort({ timestamp: 1 });
     res.json(messages);
   } catch (error) {
-    console.error("Error fetching messages:", error);
+    console.error("❌ Error fetching messages:", error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
@@ -49,10 +49,18 @@ io.on("connection", (socket) => {
   console.log("✅ A user connected:", socket.id);
 
   socket.on("join", async (username) => {
-    if (!username) return;
+    if (!username) {
+      console.log("❌ Received join request with no username!");
+      return;
+    }
 
-    users[username] = socket.id; // ✅ Store user with socket ID
-    io.emit("userList", Object.keys(users)); // ✅ Update all clients with the online user list
+    console.log(`✅ User joined: ${username}, Socket ID: ${socket.id}`);
+
+    // ✅ Store user with username and socket ID
+    users[username] = socket.id;
+
+    // ✅ Emit updated online users list to all clients
+    io.emit("userList", Object.keys(users));
 
     try {
       const chatHistory = await Message.find({
@@ -99,12 +107,12 @@ io.on("connection", (socket) => {
   });
 
   socket.on("disconnect", () => {
-    const username = Object.keys(users).find((key) => users[key] === socket.id);
-    if (username) {
-      delete users[username]; // ✅ Remove user from online list
-      io.emit("userList", Object.keys(users)); // ✅ Update the online user list
+    const user = Object.keys(users).find((key) => users[key] === socket.id);
+    if (user) {
+      console.log(`❌ User disconnected: ${user}`);
+      delete users[user]; // ✅ Remove from users list
+      io.emit("userList", Object.keys(users)); // ✅ Update online user list
     }
-    console.log("❌ User disconnected:", socket.id);
   });
 });
 
