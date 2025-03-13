@@ -49,8 +49,10 @@ io.on("connection", (socket) => {
   console.log("✅ A user connected:", socket.id);
 
   socket.on("join", async (username) => {
-    users[username] = socket.id;
-    io.emit("userList", Object.keys(users));
+    if (!username) return;
+
+    users[username] = socket.id; // ✅ Store user with socket ID
+    io.emit("userList", Object.keys(users)); // ✅ Update all clients with the online user list
 
     try {
       const chatHistory = await Message.find({
@@ -99,8 +101,8 @@ io.on("connection", (socket) => {
   socket.on("disconnect", () => {
     const username = Object.keys(users).find((key) => users[key] === socket.id);
     if (username) {
-      delete users[username];
-      io.emit("userList", Object.keys(users));
+      delete users[username]; // ✅ Remove user from online list
+      io.emit("userList", Object.keys(users)); // ✅ Update the online user list
     }
     console.log("❌ User disconnected:", socket.id);
   });
