@@ -124,7 +124,19 @@ cloudinary.config({
 
 // ✅ Upload Profile Picture & Save in MongoDB
 app.post("/api/user/profile", authenticateUser, async (req, res) => {
-  const { name, bio, title, githubUrl, portfolio, skills, experience, interests, profilePicture } = req.body;
+  const {
+    name,
+    bio,
+    title,
+    githubUrl,
+    portfolio,
+    skills,
+    experience,
+    interests,
+    profilePicture,
+    friendsToAdd, // Assume this is an array of friend userIds to add
+    friendsToRemove, // Array of userIds to remove
+  } = req.body;
 
   try {
     const user = await UserCollection.findById(req.user.id);
@@ -139,9 +151,9 @@ app.post("/api/user/profile", authenticateUser, async (req, res) => {
     if (title) user.title = title;
     if (githubUrl) user.githubUrl = githubUrl;
     if (portfolio) user.portfolio = portfolio;
-    if (skills) user.skills = skills;  // Update skills
-    if (experience) user.experience = experience;  // Update experience
-    if (interests) user.interests = interests;  // Update interests
+    if (skills) user.skills = skills;
+    if (experience) user.experience = experience;
+    if (interests) user.interests = interests;
 
     // Handle profile picture update if present
     if (profilePicture) {
@@ -151,6 +163,15 @@ app.post("/api/user/profile", authenticateUser, async (req, res) => {
         { new: true, upsert: true }
       );
       user.profilePictureId = updatedProfilePic._id;
+    }
+
+    // Handle friends update (add/remove)
+    if (friendsToAdd && Array.isArray(friendsToAdd)) {
+      user.friends = [...user.friends, ...friendsToAdd];
+    }
+
+    if (friendsToRemove && Array.isArray(friendsToRemove)) {
+      user.friends = user.friends.filter(friendId => !friendsToRemove.includes(friendId));
     }
 
     await user.save();
@@ -165,32 +186,87 @@ app.post("/api/user/profile", authenticateUser, async (req, res) => {
 
 // ✅ Fetch User Profile Picture
 // Fetch User Profile Picture and Other User Data
+// Fetch User Profile Picture and Other User Data
 app.get("/api/user/profile", authenticateUser, async (req, res) => {
   try {
     const user = await UserCollection.findById(req.user.id)
-      .populate("profilePictureId"); // Populating profile picture
+      .populate("profilePictureId") // Populating profile picture
+      .populate("friends"); // Populate friends array to return full user details of friends
 
     if (!user) {
       return res.status(404).json({ error: "User not found" });
     }
 
-    // Returning the full user data, including the profile picture URL
+    // Returning the full user data, including the profile picture URL and friends
     res.json({
       name: user.name,
       bio: user.bio,
       skills: user.skills,
-      experience: user.experience, // Return experience
-      interests: user.interests, // Return interests
+      experience: user.experience,
+      interests: user.interests,
       title: user.title,
       githubUrl: user.githubUrl,
       portfolio: user.portfolio,
       profilePicture: { url: user.profilePictureId?.url }, // Profile picture URL
+      friends: user.friends.map(friend => ({
+        name: friend.name,
+        title: friend.title,
+        profilePicture: friend.profilePictureId?.url, // Friend's profile picture
+      })),
     });
   } catch (err) {
     console.error("❌ Error fetching profile:", err);
     res.status(500).json({ error: "Failed to fetch profile" });
   }
 });
+
+
+// Fetch users
+// Fetch users with populated profile picture
+app.get("/api/users", authenticateUser, async (req, res) => {
+  try {
+    const users = await UserCollection.find()
+      .populate("profilePictureId")  // Populate the profile picture field
+      .exec();
+    res.status(200).json(users);  // Send users with profile picture data
+  } catch (err) {
+    console.error("Error fetching users:", err);
+    res.status(500).json({ error: "Failed to fetch users" });
+  }
+});
+
+
+// Add friend to a user's friends list
+app.post("/api/user/add-friend", authenticateUser, async (req, res) => {
+  const { friendId } = req.body;
+
+  try {
+    const user = await UserCollection.findById(req.user.id);
+    const friend = await UserCollection.findById(friendId);
+
+    if (!user || !friend) {
+      return res.status(404).json({ error: "User or friend not found" });
+    }
+
+    // Add the friend to the user's friend list (bi-directional)
+    if (!user.friends.includes(friendId)) {
+      user.friends.push(friendId);
+    }
+
+    if (!friend.friends.includes(req.user.id)) {
+      friend.friends.push(req.user.id);
+    }
+
+    await user.save();
+    await friend.save();
+
+    res.status(200).json({ message: "Friend added successfully" });
+  } catch (err) {
+    console.error("Error adding friend:", err);
+    res.status(500).json({ error: "Failed to add friend" });
+  }
+});
+
 
 
 app.get("/api/cloudinary-signature", authenticateUser, (req, res) => {
