@@ -423,7 +423,10 @@ const Dashboard = () => {
               +4 new connections
             </p>
           </div>
-          <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg hover:shadow-xl transition-shadow">
+          <button
+            onClick={() => navigate("/chat")}
+            className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg hover:shadow-xl transition-shadow text-left"
+          >
             <div className="flex items-center justify-between">
               <div>
                 <h3 className="text-lg font-semibold text-gray-700 dark:text-gray-200">
@@ -438,7 +441,7 @@ const Dashboard = () => {
             <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
               3 unread messages
             </p>
-          </div>
+          </button>
         </div>
 
         {/* Events & Achievements */}
