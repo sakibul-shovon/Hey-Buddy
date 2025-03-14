@@ -16,7 +16,7 @@ mongoose
     console.error("❌ MongoDB Connection Failed:", err);
   });
 
-// ✅ Define User Schema (References ProfilePictures)
+// ✅ Define User Schema (References ProfilePictures and friends)
 const userSchema = new mongoose.Schema({
   email: {
     type: String,
@@ -29,7 +29,7 @@ const userSchema = new mongoose.Schema({
   },
   profilePictureId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "ProfilePictures",
+    ref: "ProfilePictures", // Reference to ProfilePictures model
     default: null,
   },
   name: {
@@ -60,6 +60,12 @@ const userSchema = new mongoose.Schema({
     required: false,  // Non-required field
     default: null,
   },
+  friends: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "UserCollection",  // Reference to the UserCollection model
+    required: false,
+    default: [],
+  }],
   githubUrl: {
     type: String,
     required: false,  // Non-required field
@@ -86,7 +92,7 @@ const userSchema = new mongoose.Schema({
 const profilePictureSchema = new mongoose.Schema({
   userId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "UserCollection",
+    ref: "UserCollection",  // Reference to the UserCollection model
     required: true,
   },
   url: {

@@ -67,7 +67,7 @@ const Dashboard = () => {
           throw new Error(`Error ${response.status}: ${response.statusText}`);
         }
         const data = await response.json();
-        console.log("Profile Picture Data:", data);
+        //console.log("Profile Data:", data);
         if (data?.profilePicture?.url) {
           setUploadedImage(data.profilePicture.url);
         } else {
