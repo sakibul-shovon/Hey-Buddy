@@ -418,9 +418,9 @@ const MicroProjectsPage = ({ userId }) => {
                 >
                   Plan Bid
                 </button>
-                <button className="border border-gray-300 px-4 py-2 rounded-md text-sm">
+                {/* <button className="border border-gray-300 px-4 py-2 rounded-md text-sm">
                   Chat
-                </button>
+                </button> */}
               </div>
               <span className="text-sm text-gray-500">{project.company}</span>
             </div>
