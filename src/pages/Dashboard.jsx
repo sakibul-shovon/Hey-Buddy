@@ -380,6 +380,14 @@ const Dashboard = () => {
           )}
           {error && <p className="text-red-500 mt-2">{error}</p>}
         </div>
+        <div className="mt-4">
+    <button
+      onClick={() => navigate("/edit-profile")}  // Redirect to the Edit Profile page
+      className="mb-5 px-6 py-2 bg-teal-500 text-white rounded-md hover:bg-teal-600 transition"
+    >
+      Edit Profile
+    </button>
+  </div>
 
         {/* Stats Section */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
