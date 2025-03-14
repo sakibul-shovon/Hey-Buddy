@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useContext } from "react";
 import { UserPlus, X, MessageCircle, Search, Link } from "lucide-react";
 import { AuthContext } from "../context/AuthContext"; // Import your AuthContext
+import FriendListModal from "../components/FriendListModal"; // Import the FriendListModal component
 
 const FindBuddy = () => {
   const { isAuthenticated, userId } = useContext(AuthContext); // Get userId from context
@@ -10,6 +11,7 @@ const FindBuddy = () => {
   const [searchSkills, setSearchSkills] = useState("");
   const [connections, setConnections] = useState([]); // List of connected users
   const [selectedFilter, setSelectedFilter] = useState("all");
+  const [isModalOpen, setIsModalOpen] = useState(false); // State to control modal visibility
 
   const API_URL = (import.meta.env.VITE_API_URL || "http://localhost:8000").replace(/\/$/, "");
   const authToken = localStorage.getItem("authToken");
@@ -163,6 +165,21 @@ const nextProfile = () => {
   return (
     <div className="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8 dark:bg-gray-900">
       <h1 className="text-3xl font-semibold mb-6 text-gray-900 dark:text-gray-100">Find Your Buddy</h1>
+
+      {/* Button to open the friends list modal */}
+      <button
+        onClick={() => setIsModalOpen(true)}
+        className="bg-indigo-600 text-white px-6 py-3 rounded-lg hover:bg-indigo-700 transition duration-200 mb-4"
+      >
+        View Friends List
+      </button>
+
+      {/* Render the FriendListModal */}
+      <FriendListModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        friends={connections} // Pass the connections as friends
+      />
 
       {/* Search and Filter Bar */}
       <div className="max-w-2xl mx-auto mb-8">

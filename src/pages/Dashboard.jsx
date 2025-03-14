@@ -18,6 +18,7 @@ import CalendarHeatmap from "react-calendar-heatmap";
 import "react-calendar-heatmap/dist/styles.css";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
+import FriendListModal from "../components/FriendListModal"; // Import the FriendListModal component
 
 const Dashboard = () => {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
@@ -31,6 +32,8 @@ const Dashboard = () => {
     if (savedMode) return savedMode === "dark";
     return window.matchMedia("(prefers-color-scheme: dark)").matches;
   });
+  const { connections } = useContext(AuthContext); // Assuming connections are stored in AuthContext
+  const [isModalOpen, setIsModalOpen] = useState(false); // State to control modal visibility
 
   const fileInputRef = useRef(null);
   const navigate = useNavigate();
@@ -407,7 +410,10 @@ const Dashboard = () => {
               +2 projects this month
             </p>
           </div>
-          <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg hover:shadow-xl transition-shadow">
+          <div
+            className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg hover:shadow-xl transition-shadow cursor-pointer"
+            onClick={() => navigate("/find_buddy")} // Navigate to /find_buddy on click
+          >
             <div className="flex items-center justify-between">
               <div>
                 <h3 className="text-lg font-semibold text-gray-700 dark:text-gray-200">
@@ -443,6 +449,13 @@ const Dashboard = () => {
             </p>
           </button>
         </div>
+
+        {/* Render the FriendListModal */}
+        <FriendListModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          friends={connections} // Pass the connections as friends
+        />
 
         {/* Events & Achievements */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
