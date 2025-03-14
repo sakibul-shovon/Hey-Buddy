@@ -1,7 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { UserPlus, X, MessageCircle, Search, Link } from "lucide-react";
+import { AuthContext } from "../context/AuthContext"; // Import your AuthContext
 
 const FindBuddy = () => {
+  const { isAuthenticated, userId } = useContext(AuthContext); // Get userId from context
   const [users, setUsers] = useState([]);
   const [displayedUsers, setDisplayedUsers] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -12,26 +14,33 @@ const FindBuddy = () => {
   const API_URL = (import.meta.env.VITE_API_URL || "http://localhost:8000").replace(/\/$/, "");
   const authToken = localStorage.getItem("authToken");
 
-  useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        const response = await fetch(`${API_URL}/api/users`, {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("authToken")}`,
-          },
-        });
-        const data = await response.json();
-        setUsers(data);
-        setDisplayedUsers(data); // Initialize displayed users with all users
-      } catch (err) {
-        console.error("Error fetching users:", err);
-      }
-    };
 
-    fetchUsers();
-  }, []);
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      const fetchUsers = async () => {
+        try {
+          const response = await fetch(`${API_URL}/api/users`, {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${authToken}`,
+            },
+          });
+          const data = await response.json();
+
+          // Filter out the current user using userId from the context
+          const filteredData = data.filter(user => user._id !== userId && user.email !== localStorage.getItem("username"));
+          setUsers(filteredData);
+          setDisplayedUsers(filteredData); // Initialize displayed users without the current user
+        } catch (err) {
+          console.error("Error fetching users:", err);
+        }
+      };
+
+      fetchUsers();
+    }
+  }, [authToken, userId, isAuthenticated, API_URL]);
 
   const filterUsers = (searchTerm) => {
     if (!searchTerm.trim()) return users;
@@ -56,11 +65,50 @@ const FindBuddy = () => {
   const handleConnect = async () => {
     if (currentIndex < displayedUsers.length) {
       const friendId = displayedUsers[currentIndex]._id;
-      await addFriend(friendId);
-      setConnections([...connections, displayedUsers[currentIndex]]);
-      nextProfile();
+  
+      // Get the current user's ID (the one pressing the connect button)
+      const currentUserId = userId; // Assuming userId comes from AuthContext
+  
+      try {
+        // Add the current user to the selected user's friend list
+        const response1 = await fetch(`${API_URL}/api/user/add-friend/${friendId}`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${authToken}`,
+          },
+          body: JSON.stringify({ friendId: currentUserId }),
+        });
+  
+        if (response1.ok) {
+          console.log("Friend added to selected user");
+  
+          // Add the selected user to the current user's friend list
+          const response2 = await fetch(`${API_URL}/api/user/add-friend/${currentUserId}`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${authToken}`,
+            },
+            body: JSON.stringify({ friendId: friendId }),
+          });
+  
+          if (response2.ok) {
+            console.log("Selected user added to current user's friends");
+            setConnections([...connections, displayedUsers[currentIndex]]);
+            nextProfile(); // Move to the next profile after successful connection
+          } else {
+            console.error("Error adding friend to current user's friends list");
+          }
+        } else {
+          console.error("Error adding friend to selected user's friends list");
+        }
+      } catch (err) {
+        console.error("Error during connection:", err);
+      }
     }
   };
+  
 
   const addFriend = async (friendId) => {
     try {
@@ -214,20 +262,6 @@ const FindBuddy = () => {
                         className="bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-sm"
                       >
                         {interest}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-
-                <div>
-                  <h3 className="text-lg font-semibold dark:text-gray-100">Looking For</h3>
-                  <div className="flex flex-wrap gap-2 mt-2">
-                    {(currentUser.lookingFor || []).map((item, index) => (
-                      <span
-                        key={index}
-                        className="bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-sm"
-                      >
-                        {item}
                       </span>
                     ))}
                   </div>
