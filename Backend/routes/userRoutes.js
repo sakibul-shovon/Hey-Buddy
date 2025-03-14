@@ -119,4 +119,21 @@ router.delete("/user/profile", async (req, res) => {
   }
 });
 
+router.post('/login', async (req, res) => {
+  // ...existing code to authenticate user...
+
+  // Assuming user is authenticated and user object is available
+  const user = await UserCollection.findById(userId);
+  user.loginDates.push(new Date());
+  await user.save();
+
+  res.status(200).json({ message: 'Login successful', user });
+});
+
+router.get('/login-dates', async (req, res) => {
+  const userId = req.user.id; // Assuming user ID is available in req.user
+  const user = await User.findById(userId);
+  res.status(200).json({ loginDates: user.loginDates });
+});
+
 export default router;

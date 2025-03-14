@@ -85,6 +85,10 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: false,  // Non-required field
     default: null,
+  },
+  loginDates: {
+    type: [Date],
+    default: []
   }
 });
 

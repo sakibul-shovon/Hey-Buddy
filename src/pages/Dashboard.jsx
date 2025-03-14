@@ -401,7 +401,7 @@ const Dashboard = () => {
                   Active Projects
                 </h3>
                 <p className="text-3xl font-bold text-teal-600 dark:text-teal-400">
-                  12
+                  0
                 </p>
               </div>
               <FaProjectDiagram className="text-teal-500 dark:text-teal-400 text-3xl" />
@@ -420,7 +420,7 @@ const Dashboard = () => {
                   Team Members
                 </h3>
                 <p className="text-3xl font-bold text-green-600 dark:text-green-400">
-                  24
+                  2
                 </p>
               </div>
               <FaUsers className="text-green-500 dark:text-green-400 text-3xl" />
