@@ -1,154 +1,38 @@
-import React, { useState } from "react";
-import { Search, Filter, Plus, Star, MessageCircle, Clock, Tag, Users } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import {
+  Search,
+  Filter,
+  Plus,
+  Star,
+  MessageCircle,
+  Clock,
+  Tag,
+  Users,
+  X,
+  Save,
+} from "lucide-react";
 
-const sampleProjects = [
-  {
-    id: 1,
-    title: "Develop Fintech Mobile App with bKash Integration",
-    category: "Mobile App",
-    description: "We need a skilled mobile developer to create a fintech app...",
-    skills: ["React Native", "Mobile Development", "bKash API", "Payment Gateway"],
-    minBudget: 80000,
-    maxBudget: 150000,
-    postedBy: "FinCorp Bangladesh",
-    rating: 4.8,
-    reviewCount: 24,
-    deadline: "30 days",
-    bids: 7,
-  },
-  {
-    id: 2,
-    title: "Build E-commerce Website with Nagad & bKash Payment",
-    category: "Web Development",
-    description: "Looking for a developer to create a full-featured e-commerce platform for our electronics store. Must include product catalog, shopping cart, and integration with Nagad and bKash payment gateways.",
-    skills: ["React.js", "Node.js", "MongoDB", "Payment API"],
-    minBudget: 60000,
-    maxBudget: 90000,
-    postedBy: "Dhaka Tech Hub",
-    rating: 4.9,
-    reviewCount: 36,
-    deadline: "20 days",
-    bids: 12
-  },
-  {
-    id: 3,
-    title: "Develop Machine Learning Model for Bangla Text Analysis",
-    category: "AI/ML",
-    description: "Need an AI expert to develop a sentiment analysis model for Bangla language text from social media. Model should classify customer feedback as positive, negative, or neutral.",
-    skills: ["Python", "Machine Learning", "NLP", "Bangla Language Processing"],
-    minBudget: 70000,
-    maxBudget: 120000,
-    postedBy: "Data Insights BD",
-    rating: 4.6,
-    reviewCount: 18,
-    deadline: "25 days",
-    bids: 9
-  },
-  {
-    id: 4,
-    title: "Design UI/UX for Food Delivery App in Bangladesh",
-    category: "UI/UX Design",
-    description: "Seeking a talented UI/UX designer to create modern, user-friendly interfaces for our food delivery app targeting the Bangladesh market. Must understand local user preferences.",
-    skills: ["UI/UX Design", "Figma", "Mobile App Design", "User Research"],
-    minBudget: 40000,
-    maxBudget: 70000,
-    postedBy: "FoodExpress BD",
-    rating: 4.7,
-    reviewCount: 29,
-    deadline: "15 days",
-    bids: 15
-  },
-  {
-    id: 5,
-    title: "Setup CI/CD Pipeline for Dhaka-based Startup",
-    category: "DevOps",
-    description: "Need a DevOps engineer to set up a complete CI/CD pipeline using GitLab CI, Docker, and Kubernetes for our growing tech startup in Dhaka.",
-    skills: ["DevOps", "Docker", "Kubernetes", "CI/CD", "GitLab"],
-    minBudget: 50000,
-    maxBudget: 80000,
-    postedBy: "TechNext Bangladesh",
-    rating: 4.5,
-    reviewCount: 12,
-    deadline: "10 days",
-    bids: 6
-  },
-  {
-    id: 6,
-    title: "Develop Blockchain Solution for Supply Chain Tracking",
-    category: "Blockchain",
-    description: "Looking for a blockchain developer to create a supply chain tracking solution for garment industry in Bangladesh. Should use Hyperledger Fabric and provide transparent tracking.",
-    skills: ["Blockchain", "Hyperledger", "Smart Contracts", "Supply Chain"],
-    minBudget: 90000,
-    maxBudget: 180000,
-    postedBy: "Bangladesh Garments Association",
-    rating: 4.3,
-    reviewCount: 8,
-    deadline: "45 days",
-    bids: 4
-  },
-  {
-    id: 7,
-    title: "Create Digital Marketing Campaign for Tech Bootcamp",
-    category: "Digital Marketing",
-    description: "Need a digital marketing expert to create and execute a campaign for our new tech bootcamp in Dhaka. Focus on Facebook, YouTube, and Google Ads targeting young professionals.",
-    skills: ["Digital Marketing", "Social Media", "Google Ads", "Analytics"],
-    minBudget: 35000,
-    maxBudget: 60000,
-    postedBy: "CodeCamp Bangladesh",
-    rating: 4.8,
-    reviewCount: 22,
-    deadline: "7 days",
-    bids: 19
-  },
-  {
-    id: 8,
-    title: "Build Real-time Dashboard for E-commerce Analytics",
-    category: "Web Development",
-    description: "Need a developer to create a real-time analytics dashboard for our e-commerce platform. Should show sales, user behavior, and inventory metrics with charts and filters.",
-    skills: ["JavaScript", "React", "D3.js", "WebSockets", "Data Visualization"],
-    minBudget: 45000,
-    maxBudget: 75000,
-    postedBy: "ShopBD Online",
-    rating: 4.6,
-    reviewCount: 15,
-    deadline: "14 days",
-    bids: 10
-  },
-  {
-    id: 9,
-    title: "Develop IoT Solution for Smart Agriculture in Bangladesh",
-    category: "Other",
-    description: "Seeking an IoT developer to create a solution for monitoring soil moisture, temperature, and sunlight for small farms in rural Bangladesh. Must work with low-cost sensors and have low power requirements.",
-    skills: ["IoT", "Embedded Systems", "Arduino", "Sensor Integration"],
-    minBudget: 65000,
-    maxBudget: 110000,
-    postedBy: "AgriTech Solutions",
-    rating: 4.4,
-    reviewCount: 7,
-    deadline: "30 days",
-    bids: 5
-  },
-  {
-    id: 10,
-    title: "Create AR App for Virtual Clothing Try-On",
-    category: "Mobile App",
-    description: "Looking for AR developer to build a mobile app that allows users to virtually try on traditional Bangladeshi clothing. Should work on both Android and iOS.",
-    skills: ["Augmented Reality", "Unity", "ARCore", "ARKit", "3D Modeling"],
-    minBudget: 100000,
-    maxBudget: 200000,
-    postedBy: "Fashion Tech BD",
-    rating: 4.9,
-    reviewCount: 11,
-    deadline: "60 days",
-    bids: 3
-  }
-];
-
-const MicroProjectsPage = () => {
+const MicroProjectsPage = ({ userId }) => {
   const [activeTab, setActiveTab] = useState("browse");
-  const [projects, setProjects] = useState(sampleProjects);
+  const [projects, setProjects] = useState([]);
+  const [myProjects, setMyProjects] = useState([]);
+  const [myBids, setMyBids] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
+  const [showPostForm, setShowPostForm] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  const [formData, setFormData] = useState({
+    title: "",
+    category: "Web Development",
+    description: "",
+    skills: "",
+    minBudget: "",
+    maxBudget: "",
+    deadline: "7",
+  });
 
   const categories = [
     "All",
@@ -162,16 +46,126 @@ const MicroProjectsPage = () => {
     "Other",
   ];
 
-  const filteredProjects = projects.filter((project) => {
-    const matchesSearch =
-      project.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      project.description.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesCategory = selectedCategory === "All" || project.category === selectedCategory;
-    return matchesSearch && matchesCategory;
-  });
+  // Fetch projects with error handling
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        const [projectsRes, myProjectsRes, myBidsRes] = await Promise.all([
+          axios.get("http://localhost:8000/api/microprojects"),
+          userId
+            ? axios.get(`http://localhost:8000/api/my-microprojects/${userId}`)
+            : null,
+          userId
+            ? axios.get(`http://localhost:8000/api/my-bids/${userId}`)
+            : null,
+        ]);
+
+        setProjects(Array.isArray(projectsRes?.data) ? projectsRes.data : []);
+        if (myProjectsRes) {
+          setMyProjects(
+            Array.isArray(myProjectsRes?.data) ? myProjectsRes.data : []
+          );
+        }
+        if (myBidsRes) {
+          setMyBids(Array.isArray(myBidsRes?.data) ? myBidsRes.data : []);
+        }
+      } catch (err) {
+        setError("Failed to load projects. Please try again later.");
+        console.error("Fetch error:", err);
+        setProjects([]);
+        setMyProjects([]);
+        setMyBids([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [userId]);
+
+  // Handle project posting
+  const handlePostProject = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await axios.post(
+        "http://localhost:8000/api/microprojects",
+        {
+          ...formData,
+          skills: formData.skills.split(",").map((skill) => skill.trim()),
+          postedBy: userId,
+        }
+      );
+
+      if (response.data) {
+        setProjects((prev) => [response.data, ...prev]);
+        setShowPostForm(false);
+        setFormData({
+          title: "",
+          category: "Web Development",
+          description: "",
+          skills: "",
+          minBudget: "",
+          maxBudget: "",
+          deadline: "7",
+        });
+      }
+    } catch (err) {
+      console.error("Post error:", err);
+      alert("Failed to post project. Please check all fields.");
+    }
+  };
+
+  // Handle bidding
+  const handleBid = async (projectId) => {
+    const amount = prompt("Enter your bid amount:");
+    if (amount) {
+      try {
+        await axios.post(
+          `http://localhost:8000/api/microprojects/${projectId}/bid`,
+          {
+            bidder: userId,
+            amount: Number(amount),
+          }
+        );
+        // Refresh projects after placing bid
+        const response = await axios.get(
+          "http://localhost:8000/api/microprojects"
+        );
+        setProjects(response.data);
+      } catch (error) {
+        console.error("Bid failed:", error);
+        alert("Failed to place bid");
+      }
+    }
+  };
+
+  // Safe filtering with array checks
+  const filteredProjects = Array.isArray(projects)
+    ? projects.filter((project) => {
+        const matchesSearch =
+          project?.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          project?.description?.toLowerCase().includes(searchQuery.toLowerCase());
+        const matchesCategory =
+          selectedCategory === "All" || project?.category === selectedCategory;
+        return matchesSearch && matchesCategory;
+      })
+    : [];
+
+  const myUploadedProjects = myProjects.filter((project) => project.postedBy === userId);
+
+  // Loading and error states
+  if (loading) {
+    return <div className="text-center py-8">Loading projects...</div>;
+  }
+
+  if (error) {
+    return <div className="text-center py-8 text-red-500">{error}</div>;
+  }
 
   return (
     <div className="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
+      {/* Header */}
       <div className="flex justify-between items-center mb-8">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Micro Projects</h1>
@@ -179,174 +173,267 @@ const MicroProjectsPage = () => {
             Find quick tasks, collaborate, and grow your skills
           </p>
         </div>
-        <button className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md flex items-center transition duration-200">
-          <Plus size={18} className="mr-2" />
-          Post a Project
+        <button
+          onClick={() => setShowPostForm(true)}
+          className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md flex items-center"
+        >
+          <Plus size={18} className="mr-2" /> Post a Project
         </button>
       </div>
 
-      <div className="bg-white shadow rounded-lg">
-        <div className="border-b border-gray-200">
-          <nav className="flex -mb-px">
-            {["browse", "my-bids", "my-projects"].map((tab) => (
-              <button
-                key={tab}
-                onClick={() => setActiveTab(tab)}
-                className={`py-4 px-6 font-medium text-sm ${
-                  activeTab === tab
-                    ? "border-b-2 border-indigo-500 text-indigo-600"
-                    : "text-gray-500 hover:text-gray-700 hover:border-gray-300"
-                }`}
-              >
-                {tab.split("-").map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(" ")}
-              </button>
+      {/* Tabs */}
+      <div className="mb-8">
+        <button
+          onClick={() => setActiveTab("browse")}
+          className={`px-4 py-2 ${
+            activeTab === "browse"
+              ? "bg-indigo-600 text-white"
+              : "bg-gray-200 text-gray-700"
+          } rounded-md mr-2`}
+        >
+          Browse
+        </button>
+        <button
+          onClick={() => setActiveTab("myBids")}
+          className={`px-4 py-2 ${
+            activeTab === "myBids"
+              ? "bg-indigo-600 text-white"
+              : "bg-gray-200 text-gray-700"
+          } rounded-md mr-2`}
+        >
+          My Bids
+        </button>
+        <button
+          onClick={() => setActiveTab("myProjects")}
+          className={`px-4 py-2 ${
+            activeTab === "myProjects"
+              ? "bg-indigo-600 text-white"
+              : "bg-gray-200 text-gray-700"
+          } rounded-md`}
+        >
+          My Projects
+        </button>
+      </div>
+
+      {/* Search and Filters */}
+      <div className="mb-6 flex justify-between items-center">
+        <div className="flex gap-4">
+          <div className="relative w-64">
+            <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+            <input
+              type="text"
+              placeholder="Search projects..."
+              className="pl-10 pr-4 py-2 border rounded-md w-full text-sm"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+          </div>
+          <select
+            className="border rounded-md px-3 py-2 text-sm"
+            value={selectedCategory}
+            onChange={(e) => setSelectedCategory(e.target.value)}
+          >
+            {categories.map((category) => (
+              <option key={category} value={category}>
+                {category}
+              </option>
             ))}
-          </nav>
+          </select>
         </div>
 
-        <div className="p-6">
-          <div className="flex flex-col md:flex-row justify-between mb-6 gap-4">
-            <div className="relative w-full md:w-1/2">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <Search size={18} className="text-gray-400" />
-              </div>
-              <input
-                type="text"
-                placeholder="Search projects..."
-                className="pl-10 pr-4 py-2 border border-gray-300 rounded-md w-full focus:ring-indigo-500 focus:border-indigo-500 shadow-sm"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
-            </div>
+        <div className="flex items-center gap-2 text-sm">
+          <span>Sort by:</span>
+          <select className="border rounded-md px-3 py-2">
+            <option>Network</option>
+            <option>Newest</option>
+            <option>Budget</option>
+          </select>
+        </div>
+      </div>
 
-            <div className="flex space-x-4">
-              <div className="relative">
-                <select
-                  className="appearance-none bg-white border border-gray-300 rounded-md py-2 pl-3 pr-10 text-base focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 shadow-sm"
-                  value={selectedCategory}
-                  onChange={(e) => setSelectedCategory(e.target.value)}
-                >
-                  {categories.map((category) => (
-                    <option key={category} value={category}>
-                      {category}
-                    </option>
-                  ))}
-                </select>
-                <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
-                  <Filter size={18} className="text-gray-400" />
+      {/* Post Project Form */}
+      {showPostForm && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-lg p-6 w-full max-w-2xl">
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-2xl font-bold">Post New Project</h2>
+              <button onClick={() => setShowPostForm(false)} className="text-gray-500 hover:text-gray-700">
+                <X size={24} />
+              </button>
+            </div>
+            <form onSubmit={handlePostProject} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium mb-1">Project Title</label>
+                <input
+                  type="text"
+                  required
+                  className="w-full p-2 border rounded"
+                  value={formData.title}
+                  onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                />
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium mb-1">Category</label>
+                  <select
+                    className="w-full p-2 border rounded"
+                    value={formData.category}
+                    onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                  >
+                    {categories.slice(1).map((cat) => (
+                      <option key={cat} value={cat}>
+                        {cat}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-1">Skills (comma separated)</label>
+                  <input
+                    type="text"
+                    required
+                    className="w-full p-2 border rounded"
+                    value={formData.skills}
+                    onChange={(e) => setFormData({ ...formData, skills: e.target.value })}
+                  />
                 </div>
               </div>
 
-              <select className="appearance-none bg-white border border-gray-300 rounded-md py-2 pl-3 pr-10 text-base focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 shadow-sm">
-                <option>Sort by: Newest</option>
-                <option>Sort by: Oldest</option>
-                <option>Sort by: Budget: High to Low</option>
-                <option>Sort by: Budget: Low to High</option>
-                <option>Sort by: Deadline</option>
-              </select>
-            </div>
-          </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium mb-1">Min Budget (৳)</label>
+                  <input
+                    type="number"
+                    required
+                    className="w-full p-2 border rounded"
+                    value={formData.minBudget}
+                    onChange={(e) => setFormData({ ...formData, minBudget: e.target.value })}
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-1">Max Budget (৳)</label>
+                  <input
+                    type="number"
+                    required
+                    className="w-full p-2 border rounded"
+                    value={formData.maxBudget}
+                    onChange={(e) => setFormData({ ...formData, maxBudget: e.target.value })}
+                  />
+                </div>
+              </div>
 
-          {activeTab === "browse" && (
-            <div className="grid grid-cols-1 gap-6">
-              {filteredProjects.map((project) => (
-                <ProjectCard key={project.id} project={project} />
+              <div>
+                <label className="block text-sm font-medium mb-1">Description</label>
+                <textarea
+                  required
+                  rows={4}
+                  className="w-full p-2 border rounded"
+                  value={formData.description}
+                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium mb-1">Deadline (days)</label>
+                <input
+                  type="number"
+                  required
+                  className="w-full p-2 border rounded"
+                  value={formData.deadline}
+                  onChange={(e) => setFormData({ ...formData, deadline: e.target.value })}
+                />
+              </div>
+
+              <button type="submit" className="bg-indigo-600 text-white px-4 py-2 rounded flex items-center">
+                <Save className="mr-2" size={18} /> Post Project
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Project List */}
+      <div className="grid grid-cols-1 gap-6">
+        {filteredProjects.map((project) => (
+          <div
+            key={project._id}
+            className="border-b border-gray-200 py-6"
+          >
+            <div className="flex justify-between items-start">
+              <div>
+                <h3 className="text-lg font-semibold text-gray-900">
+                  {project.title}
+                </h3>
+                <div className="mt-2 flex items-center gap-2 text-sm">
+                  <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded">
+                    {project.category}
+                  </span>
+                  <Star className="w-4 h-4 text-yellow-400" />
+                  <span className="text-gray-600">
+                    {project.rating} - {project.reviews} reviews
+                  </span>
+                </div>
+              </div>
+              <button className="text-gray-400 hover:text-gray-600">
+                <MessageCircle className="w-5 h-5" />
+              </button>
+            </div>
+
+            <p className="mt-4 text-gray-600 text-sm">{project.description}</p>
+
+            <div className="mt-4 flex gap-2 flex-wrap">
+              {project.skills?.map((skill, index) => (
+                <span
+                  key={index}
+                  className="bg-gray-100 text-gray-700 px-2 py-1 rounded text-sm"
+                >
+                  {skill}
+                </span>
               ))}
             </div>
-          )}
 
-          {activeTab === "my-bids" && (
-            <div className="text-center py-12">
-              <p className="text-gray-500">You haven't placed any bids yet.</p>
-              <button className="mt-4 text-indigo-600 hover:text-indigo-800 font-medium">
-                Browse projects to get started
-              </button>
+            <div className="mt-4 grid grid-cols-3 gap-4 text-sm">
+              <div className="flex items-center gap-1">
+                <Tag className="w-4 h-4 text-gray-500" />
+                <span className="text-gray-600">{project.budget}</span>
+              </div>
+              <div className="flex items-center gap-1">
+                <Clock className="w-4 h-4 text-gray-500" />
+                <span className="text-gray-600">{project.deadline}</span>
+              </div>
+              <div className="flex items-center gap-1">
+                <Users className="w-4 h-4 text-gray-500" />
+                <span className="text-gray-600">
+                  {project.applicants} applicants
+                </span>
+              </div>
             </div>
-          )}
 
-          {activeTab === "my-projects" && (
-            <div className="text-center py-12">
-              <p className="text-gray-500">You haven't posted any projects yet.</p>
-              <button className="mt-4 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md inline-flex items-center transition duration-200">
-                <Plus size={18} className="mr-2" />
-                Post Your First Project
-              </button>
+            <div className="mt-4 flex justify-between items-center">
+              <div className="flex gap-2">
+                <button
+                  onClick={() => handleBid(project._id)}
+                  className="bg-indigo-600 text-white px-4 py-2 rounded-md text-sm"
+                >
+                  Plan Bid
+                </button>
+                <button className="border border-gray-300 px-4 py-2 rounded-md text-sm">
+                  Chat
+                </button>
+              </div>
+              <span className="text-sm text-gray-500">{project.company}</span>
             </div>
-          )}
-        </div>
-      </div>
-    </div>
-  );
-};
-
-const ProjectCard = ({ project }) => {
-  return (
-    <div className="border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow duration-200">
-      <div className="flex justify-between items-start">
-        <div>
-          <h3 className="text-lg font-medium text-gray-900">{project.title}</h3>
-          <div className="flex items-center mt-1">
-            <Tag size={14} className="text-gray-400 mr-1" />
-            <span className="text-sm text-gray-500">{project.category}</span>
           </div>
-        </div>
-        <div className="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded">
-          {project.minBudget} - {project.maxBudget} ৳
-        </div>
-      </div>
-
-      <p className="mt-3 text-gray-600 text-sm line-clamp-2">{project.description}</p>
-
-      <div className="mt-4 flex flex-wrap gap-2">
-        {project.skills.map((skill, index) => (
-          <span
-            key={index}
-            className="bg-indigo-50 text-indigo-700 text-xs font-medium px-2.5 py-0.5 rounded"
-          >
-            {skill}
-          </span>
         ))}
       </div>
 
-      <div className="mt-6 flex items-center justify-between">
-        <div className="flex items-center">
-          <img
-            src={`/api/placeholder/32/32`}
-            alt="Avatar"
-            className="w-8 h-8 rounded-full"
-          />
-          <div className="ml-2">
-            <p className="text-sm font-medium text-gray-900">{project.postedBy}</p>
-            <div className="flex items-center">
-              <Star size={14} className="text-yellow-400" fill="currentColor" />
-              <span className="text-xs text-gray-500 ml-1">
-                {project.rating} • {project.reviewCount} reviews
-              </span>
-            </div>
-          </div>
+      {/* Empty State */}
+      {!loading && activeTab === "browse" && filteredProjects.length === 0 && (
+        <div className="text-center py-12 text-gray-500">
+          No projects found matching your criteria
         </div>
-
-        <div className="flex items-center space-x-4">
-          <div className="flex items-center text-gray-500">
-            <Clock size={14} className="mr-1" />
-            <span className="text-xs">{project.deadline}</span>
-          </div>
-          <div className="flex items-center text-gray-500">
-            <Users size={14} className="mr-1" />
-            <span className="text-xs">{project.bids}</span>
-          </div>
-        </div>
-      </div>
-
-      <div className="mt-6 flex space-x-3">
-        <button className="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md text-sm font-medium transition duration-200">
-          Place Bid
-        </button>
-        <button className="flex items-center justify-center px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 transition duration-200">
-          <MessageCircle size={16} className="mr-2" />
-          Chat
-        </button>
-      </div>
+      )}
     </div>
   );
 };

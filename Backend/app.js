@@ -7,6 +7,7 @@ import jwt from "jsonwebtoken";
 import cloudinary from "cloudinary";
 import { UserCollection, ProfilePictures } from "./models/User.js";
 import projectRoutes from './routes/projectRoutes.js';
+import microprojectsRoutes from './routes/microprojectsRoutes.js';
 
 dotenv.config();
 
@@ -20,6 +21,7 @@ app.use(
     credentials: true,
   })
 );
+app.use('/api', microprojectsRoutes);
 
 // ✅ Ensure Environment Variables Exist
 const mongoURI = process.env.MONGO_URI;
