@@ -4,17 +4,15 @@ import { AuthContext } from "../context/AuthContext"; // Import your AuthContext
 
 const FindBuddy = () => {
   const { isAuthenticated, userId } = useContext(AuthContext); // Get userId from context
-  const [users, setUsers] = useState([]);
-  const [displayedUsers, setDisplayedUsers] = useState([]);
+  const [users, setUsers] = useState([]); // All users from the API
+  const [displayedUsers, setDisplayedUsers] = useState([]); // Filtered users displayed on the page
   const [currentIndex, setCurrentIndex] = useState(0);
   const [searchSkills, setSearchSkills] = useState("");
-  const [connections, setConnections] = useState([]);
+  const [connections, setConnections] = useState([]); // List of connected users
   const [selectedFilter, setSelectedFilter] = useState("all");
 
   const API_URL = (import.meta.env.VITE_API_URL || "http://localhost:8000").replace(/\/$/, "");
   const authToken = localStorage.getItem("authToken");
-
-
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -27,12 +25,33 @@ const FindBuddy = () => {
               Authorization: `Bearer ${authToken}`,
             },
           });
-          const data = await response.json();
 
-          // Filter out the current user using userId from the context
-          const filteredData = data.filter(user => user._id !== userId && user.email !== localStorage.getItem("username"));
+          // Log the fetched data for debugging
+          const data = await response.json();
+          // console.log("Fetched users data:", data);
+
+          // Find the current user's data
+          const currentUser = data.find(user => user.email === localStorage.getItem("username"));
+
+          // Log if current user is found or not
+          // if (currentUser) {
+          //   console.log("Current user found:", currentUser);
+          // } else {
+          //   console.log("Current user not found in fetched data");
+          // }
+
+          // Get the friends list of the current user
+          const myfriends = currentUser ? currentUser.friends : [];  // Get friends from current user
+          //console.log(myfriends);
+          // Filter out the current user and users who are already in the friends list
+          const filteredData = data.filter(user => 
+            user.email !== localStorage.getItem("username") &&  // Exclude the current user
+            !myfriends.includes(user._id) // Exclude users who are already friends
+          );
+
           setUsers(filteredData);
-          setDisplayedUsers(filteredData); // Initialize displayed users without the current user
+          setDisplayedUsers(filteredData); // Initialize displayed users without the current user and friends
+
         } catch (err) {
           console.error("Error fetching users:", err);
         }
@@ -65,26 +84,23 @@ const FindBuddy = () => {
   const handleConnect = async () => {
     if (currentIndex < displayedUsers.length) {
       const friendId = displayedUsers[currentIndex]._id;
-  
-      // Get the current user's ID (the one pressing the connect button)
-      const currentUserId = userId; // Assuming userId comes from AuthContext
-  
+
       try {
         // Add the current user to the selected user's friend list
-        const response1 = await fetch(`${API_URL}/api/user/add-friend/${friendId}`, {
+        const response1 = await fetch(`${API_URL}/api/user/add-friend`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${authToken}`,
           },
-          body: JSON.stringify({ friendId: currentUserId }),
+          body: JSON.stringify({ friendId: friendId }),
         });
-  
+
         if (response1.ok) {
           console.log("Friend added to selected user");
-  
+
           // Add the selected user to the current user's friend list
-          const response2 = await fetch(`${API_URL}/api/user/add-friend/${currentUserId}`, {
+          const response2 = await fetch(`${API_URL}/api/user/add-friend`, {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
@@ -92,10 +108,15 @@ const FindBuddy = () => {
             },
             body: JSON.stringify({ friendId: friendId }),
           });
-  
+
           if (response2.ok) {
             console.log("Selected user added to current user's friends");
+
+            // Add to the connections list (You can also modify this to make it more dynamic)
             setConnections([...connections, displayedUsers[currentIndex]]);
+
+            // Remove the connected user from the displayed users
+            setDisplayedUsers(displayedUsers.filter(user => user._id !== friendId));
             nextProfile(); // Move to the next profile after successful connection
           } else {
             console.error("Error adding friend to current user's friends list");
@@ -108,37 +129,15 @@ const FindBuddy = () => {
       }
     }
   };
-  
-
-  const addFriend = async (friendId) => {
-    try {
-      const response = await fetch("/api/user/add-friend", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${authToken}`,
-        },
-        body: JSON.stringify({ friendId }),
-      });
-
-      const data = await response.json();
-      if (response.ok) {
-        console.log(data.message);
-      } else {
-        console.error("Error adding friend:", data.error);
-      }
-    } catch (err) {
-      console.error("Error adding friend:", err);
-    }
-  };
 
   const handleSkip = () => nextProfile();
 
-  const nextProfile = () => {
-    setCurrentIndex((prevIndex) =>
-      prevIndex < displayedUsers.length - 1 ? prevIndex + 1 : prevIndex
-    );
-  };
+const nextProfile = () => {
+  setCurrentIndex((prevIndex) => 
+    prevIndex === displayedUsers.length - 1 ? 0 : prevIndex + 1
+  );
+};
+
 
   const handleFilterChange = (filter) => {
     setSelectedFilter(filter);
@@ -153,9 +152,8 @@ const FindBuddy = () => {
   };
 
   const getProfilePictureUrl = (profilePicture) => {
-    // If profilePicture exists and has a URL
     if (profilePicture && profilePicture.url) {
-      return profilePicture.url; // Return the URL from ProfilePictures collection
+      return profilePicture.url;
     }
     return "/default-profile.png"; // Default image if no profile picture is found
   };

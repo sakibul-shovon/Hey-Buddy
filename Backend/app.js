@@ -239,10 +239,13 @@ app.get("/api/users", authenticateUser, async (req, res) => {
 // Add friend to a user's friends list
 app.post("/api/user/add-friend", authenticateUser, async (req, res) => {
   const { friendId } = req.body;
+  console.log("Ok!");
 
   try {
     const user = await UserCollection.findById(req.user.id);
     const friend = await UserCollection.findById(friendId);
+
+    console.log(req.user.id); console.log(friendId);
 
     if (!user || !friend) {
       return res.status(404).json({ error: "User or friend not found" });
