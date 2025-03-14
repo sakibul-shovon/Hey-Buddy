@@ -32,6 +32,54 @@ const userSchema = new mongoose.Schema({
     ref: "ProfilePictures",
     default: null,
   },
+  name: {
+    type: String,
+    required: false,  // Non-required field
+    default: null,
+  },
+  title: {
+    type: String,
+    required: false,  // Non-required field
+    default: null,
+  },
+  experience: {
+    type: String,
+    required: false,  // Non-required field
+    default: null,
+  },
+  skills: {
+    type: [String],
+    required: false,  // Non-required field
+  },
+  interests: {
+    type: [String],
+    required: false,  // Non-required field
+  },
+  lookingFor: {
+    type: [String],
+    required: false,  // Non-required field
+    default: null,
+  },
+  githubUrl: {
+    type: String,
+    required: false,  // Non-required field
+    default: null,
+  },
+  portfolio: {
+    type: String,
+    required: false,  // Non-required field
+    default: null,
+  },
+  bio: {
+    type: String,
+    required: false,  // Non-required field
+    default: null,
+  },
+  image: {
+    type: String,
+    required: false,  // Non-required field
+    default: null,
+  }
 });
 
 // ✅ Define Profile Picture Schema (Separate Collection)
