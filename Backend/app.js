@@ -124,49 +124,74 @@ cloudinary.config({
 
 // ✅ Upload Profile Picture & Save in MongoDB
 app.post("/api/user/profile", authenticateUser, async (req, res) => {
+  const { name, bio, title, githubUrl, portfolio, skills, experience, interests, profilePicture } = req.body;
+
   try {
-    const { profilePicture } = req.body;
-    if (!profilePicture?.url || !profilePicture?.publicId) {
-      return res.status(400).json({ error: "Missing required fields" });
+    const user = await UserCollection.findById(req.user.id);
+
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
     }
 
-    // ✅ Find User
-    const user = await UserCollection.findById(req.user.id);
-    if (!user) return res.status(404).json({ error: "User not found" });
+    // Update the user profile details
+    if (name) user.name = name;
+    if (bio) user.bio = bio;
+    if (title) user.title = title;
+    if (githubUrl) user.githubUrl = githubUrl;
+    if (portfolio) user.portfolio = portfolio;
+    if (skills) user.skills = skills;  // Update skills
+    if (experience) user.experience = experience;  // Update experience
+    if (interests) user.interests = interests;  // Update interests
 
-    // ✅ Update or Create Profile Picture
-    const updatedProfilePic = await ProfilePictures.findOneAndUpdate(
-      { userId: user._id },
-      { url: profilePicture.url, publicId: profilePicture.publicId },
-      { new: true, upsert: true }
-    );
+    // Handle profile picture update if present
+    if (profilePicture) {
+      const updatedProfilePic = await ProfilePictures.findOneAndUpdate(
+        { userId: user._id },
+        { url: profilePicture.url, publicId: profilePicture.publicId },
+        { new: true, upsert: true }
+      );
+      user.profilePictureId = updatedProfilePic._id;
+    }
 
-    // ✅ Update User Collection to store reference
-    user.profilePictureId = updatedProfilePic._id;
     await user.save();
-
-    res.status(200).json({ message: "Profile picture updated", profilePicture: updatedProfilePic });
+    res.status(200).json({ message: "Profile updated successfully" });
   } catch (err) {
-    console.error("❌ Error updating profile picture:", err);
-    res.status(500).json({ error: "Failed to update profile picture" });
+    console.error("Error updating profile:", err);
+    res.status(500).json({ error: "Failed to update profile" });
   }
 });
+
+
 
 // ✅ Fetch User Profile Picture
+// Fetch User Profile Picture and Other User Data
 app.get("/api/user/profile", authenticateUser, async (req, res) => {
   try {
-    const user = await UserCollection.findById(req.user.id).populate("profilePictureId");
+    const user = await UserCollection.findById(req.user.id)
+      .populate("profilePictureId"); // Populating profile picture
 
-    if (!user || !user.profilePictureId) {
-      return res.status(404).json({ error: "No profile picture found" });
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
     }
 
-    res.json({ profilePicture: { url: user.profilePictureId.url } });
+    // Returning the full user data, including the profile picture URL
+    res.json({
+      name: user.name,
+      bio: user.bio,
+      skills: user.skills,
+      experience: user.experience, // Return experience
+      interests: user.interests, // Return interests
+      title: user.title,
+      githubUrl: user.githubUrl,
+      portfolio: user.portfolio,
+      profilePicture: { url: user.profilePictureId?.url }, // Profile picture URL
+    });
   } catch (err) {
-    console.error("❌ Error fetching profile picture:", err);
-    res.status(500).json({ error: "Failed to fetch profile picture" });
+    console.error("❌ Error fetching profile:", err);
+    res.status(500).json({ error: "Failed to fetch profile" });
   }
 });
+
 
 app.get("/api/cloudinary-signature", authenticateUser, (req, res) => {
   try {
