@@ -27,41 +27,41 @@ const FindBuddy = () => {
               Authorization: `Bearer ${authToken}`,
             },
           });
-
-          // Log the fetched data for debugging
+  
           const data = await response.json();
-          // console.log("Fetched users data:", data);
-
+  
           // Find the current user's data
-          const currentUser = data.find(user => user.email === localStorage.getItem("username"));
-
-          // Log if current user is found or not
-          // if (currentUser) {
-          //   console.log("Current user found:", currentUser);
-          // } else {
-          //   console.log("Current user not found in fetched data");
-          // }
-
-          // Get the friends list of the current user
-          const myfriends = currentUser ? currentUser.friends : [];  // Get friends from current user
-          //console.log(myfriends);
-          // Filter out the current user and users who are already in the friends list
-          const filteredData = data.filter(user => 
-            user.email !== localStorage.getItem("username") &&  // Exclude the current user
-            !myfriends.includes(user._id) // Exclude users who are already friends
+          const currentUser = data.find(
+            (user) => user.email === localStorage.getItem("username")
           );
-
+  
+          // If currentUser exists, get the full friend objects from the fetched data
+          if (currentUser) {
+            const friendsData = data.filter((user) =>
+              currentUser.friends.includes(user._id)
+            );
+            setConnections(friendsData);
+          }
+  
+          // Exclude the current user and those already friends from the list of potential connections
+          const myfriends = currentUser ? currentUser.friends : [];
+          const filteredData = data.filter(
+            (user) =>
+              user.email !== localStorage.getItem("username") &&
+              !myfriends.includes(user._id)
+          );
+  
           setUsers(filteredData);
-          setDisplayedUsers(filteredData); // Initialize displayed users without the current user and friends
-
+          setDisplayedUsers(filteredData);
         } catch (err) {
           console.error("Error fetching users:", err);
         }
       };
-
+  
       fetchUsers();
     }
   }, [authToken, userId, isAuthenticated, API_URL]);
+  
 
   const filterUsers = (searchTerm) => {
     if (!searchTerm.trim()) return users;
