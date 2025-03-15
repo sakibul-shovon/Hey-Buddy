@@ -12,6 +12,11 @@ const Chat = () => {
   const [users, setUsers] = useState([]);
   const [selectedUser, setSelectedUser] = useState(null);
 
+  // Helper function to display only the name part (before '@')
+  const getDisplayName = (name) => {
+    return name.includes('@') ? name.split('@')[0] : name;
+  };
+
   useEffect(() => {
     console.log("Joining chat as:", username);
     socket.emit("join", username);
@@ -118,7 +123,7 @@ const Chat = () => {
                       }`}
                     >
                       <span className="font-semibold">
-                        {msg.sender === username ? "You" : msg.sender}:
+                        {msg.sender === username ? "You" : getDisplayName(msg.sender)}:
                       </span>{" "}
                       <span>{msg.text}</span>
                       <div className="text-xs text-gray-400 dark:text-gray-500 mt-1">

@@ -171,7 +171,7 @@ const nextProfile = () => {
         onClick={() => setIsModalOpen(true)}
         className="bg-indigo-600 text-white px-6 py-3 rounded-lg hover:bg-indigo-700 transition duration-200 mb-4"
       >
-        View Friends List
+        View Follower List
       </button>
 
       {/* Render the FriendListModal */}

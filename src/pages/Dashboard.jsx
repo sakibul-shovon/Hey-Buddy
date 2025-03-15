@@ -54,11 +54,12 @@ const Dashboard = () => {
     { date: "2024-02-10", count: 8 },
     { date: "2024-02-15", count: 3 },
     { date: "2024-02-20", count: 7 },
+    { date: "2024-03-15", count: 3 },
   ];
 
   // Gemini API Key
   // const GEMINI_API_KEY = 
-
+  const GEMINI_API_KEY = "AIzaSyBI2x7vDD3EImPEfmrV8CUkpqkNo0MScqQ";
   // Fetch profile picture on load
   useEffect(() => {
     if (!authToken) {
@@ -581,7 +582,7 @@ const Dashboard = () => {
       {showChatbot && (
         <div className="fixed bottom-20 right-4 z-50 bg-white dark:bg-gray-800 rounded-lg shadow-xl w-80 max-h-96 flex flex-col">
           <div className="bg-teal-500 text-white p-3 rounded-t-lg flex justify-between items-center">
-            <span>AI Chatbot (Gemini)</span>
+            <span>AI Chatbot </span>
             <button onClick={() => setShowChatbot(false)}>
               <FaTimes />
             </button>
