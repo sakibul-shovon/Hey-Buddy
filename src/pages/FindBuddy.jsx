@@ -69,12 +69,15 @@ const FindBuddy = () => {
     return users.filter((user) => {
       const skills = user.skills || [];
       const interests = user.interests || [];
+      const name = user.name || "";
       return (
+        name.toLowerCase().includes(lowerCaseTerm) ||
         skills.some((skill) => skill.toLowerCase().includes(lowerCaseTerm)) ||
         interests.some((interest) => interest.toLowerCase().includes(lowerCaseTerm))
       );
     });
   };
+  
   
 
   const handleSearch = (e) => {
