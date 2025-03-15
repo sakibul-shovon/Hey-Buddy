@@ -65,16 +65,17 @@ const FindBuddy = () => {
 
   const filterUsers = (searchTerm) => {
     if (!searchTerm.trim()) return users;
-    return users.filter(
-      (user) =>
-        user.skills.some((skill) =>
-          skill.toLowerCase().includes(searchTerm.toLowerCase())
-        ) ||
-        user.interests.some((interest) =>
-          interest.toLowerCase().includes(searchTerm.toLowerCase())
-        )
-    );
+    const lowerCaseTerm = searchTerm.toLowerCase();
+    return users.filter((user) => {
+      const skills = user.skills || [];
+      const interests = user.interests || [];
+      return (
+        skills.some((skill) => skill.toLowerCase().includes(lowerCaseTerm)) ||
+        interests.some((interest) => interest.toLowerCase().includes(lowerCaseTerm))
+      );
+    });
   };
+  
 
   const handleSearch = (e) => {
     e.preventDefault();
