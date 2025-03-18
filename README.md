@@ -1,5 +1,7 @@
 # Hey Buddy
 
+[![Watch the video](https://img.youtube.com/vi/Ji_CKBTT7Tg/0.jpg)](https://www.youtube.com/watch?v=Ji_CKBTT7Tg)
+
 Hey Buddy is a dynamic platform designed to connect developers and designers, fostering collaboration and growth within a vibrant community. Whether you're looking to find a coding buddy, showcase your projects, or participate in micro-projects, Hey Buddy has got you covered!
 
 ## Features
@@ -101,7 +103,7 @@ Backend/
 
 1. Clone the repository:
    ```sh
-   git clone https://github.com/sakibul-shovon/hey-buddy.git
+   git clone https://github.com/your-username/hey-buddy.git
    cd hey-buddy
    ```
 
@@ -154,4 +156,4 @@ This project is licensed under the MIT License.
 
 ## Contact
 
-For any inquiries, please contact `shovon.cse50@gmail.com`. 
+For any inquiries, please contact `your-email@example.com`. 
