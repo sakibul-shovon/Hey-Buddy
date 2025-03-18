@@ -1,8 +1,10 @@
 # Hey Buddy
 
-[![Watch the video](https://img.youtube.com/vi/Ji_CKBTT7Tg/0.jpg)](https://www.youtube.com/watch?v=Ji_CKBTT7Tg)
-
 Hey Buddy is a dynamic platform designed to connect developers and designers, fostering collaboration and growth within a vibrant community. Whether you're looking to find a coding buddy, showcase your projects, or participate in micro-projects, Hey Buddy has got you covered!
+
+## Video Demo
+
+https://www.youtube.com/watch?v=Ji_CKBTT7Tg
 
 ## Features
 
