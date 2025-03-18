@@ -105,7 +105,7 @@ Backend/
 
 1. Clone the repository:
    ```sh
-   git clone https://github.com/your-username/hey-buddy.git
+   git clone https://github.com/sakibul-shovon/hey-buddy.git
    cd hey-buddy
    ```
 
