@@ -12,6 +12,7 @@ import ShowcaseProjectsPage from "./pages/ShowcaseProjectsPage";
 import Dashboard from "./pages/Dashboard";
 import EditProfile from "./pages/EditProfile"; 
 import Chat from "./pages/Chat"; // Add this import
+import CodeEditor from "./pages/CodeEditor";
 
 function App() {
   return (
@@ -46,6 +47,7 @@ function App() {
               path="/chat"
               element={<ProtectedRoute><Layout><Chat /></Layout></ProtectedRoute>}
             />
+            <Route path="/code-editor" element={<CodeEditor />} />
           </Routes>
         </Router>
       </AuthProvider>

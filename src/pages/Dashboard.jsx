@@ -13,6 +13,7 @@ import {
   FaCamera,
   FaSun,
   FaMoon,
+  FaCode,
 } from "react-icons/fa";
 import { AiOutlineRobot } from "react-icons/ai"; // AI icon
 import CalendarHeatmap from "react-calendar-heatmap";
@@ -59,7 +60,7 @@ const Dashboard = () => {
 
   // Gemini API Key
   // const GEMINI_API_KEY = 
-  const GEMINI_API_KEY = ;
+  const GEMINI_API_KEY = "AIzaSyDp9Q7j360oitWZ_XqjCTJP89TCBPSbSvs";
   // Fetch profile picture on load
   useEffect(() => {
     if (!authToken) {
@@ -328,6 +329,13 @@ const Dashboard = () => {
               <FaCog className="text-teal-400" />
               <span>Settings</span>
             </li>
+            <li
+              onClick={() => navigate("/code-editor")}
+              className="flex items-center space-x-3 cursor-pointer hover:bg-gray-700 p-2 rounded-md transition-colors"
+            >
+              <FaCode className="text-teal-400" />
+              <span>Code Editor</span>
+            </li>
           </ul>
           <button
             onClick={handleLogout}
@@ -355,7 +363,7 @@ const Dashboard = () => {
               <FaBars />
             </button>
             <h1 className="text-3xl font-bold tracking-tight text-gray-800 dark:text-gray-100">
-              Welcome back, {username && username.split("@")[0]}!
+              Welcome back, {username ? username.split('@')[0].charAt(0).toUpperCase() + username.split('@')[0].slice(1) : 'User'}!
             </h1>
           </div>
           <div className="flex items-center space-x-4 w-full md:w-auto">
@@ -451,7 +459,7 @@ const Dashboard = () => {
         </div>
 
         {/* Stats Section */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg hover:shadow-xl transition-shadow">
             <div className="flex items-center justify-between">
               <div>
@@ -468,6 +476,7 @@ const Dashboard = () => {
               +2 projects this month
             </p>
           </div>
+
           <div
             className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg hover:shadow-xl transition-shadow cursor-pointer"
             onClick={() => navigate("/find_buddy")}
@@ -487,6 +496,7 @@ const Dashboard = () => {
               +4 new connections
             </p>
           </div>
+
           <button
             onClick={() => navigate("/chat")}
             className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg hover:shadow-xl transition-shadow text-left"
@@ -506,6 +516,26 @@ const Dashboard = () => {
               3 unread messages
             </p>
           </button>
+
+          <div
+            onClick={() => navigate("/code-editor")}
+            className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg hover:shadow-xl transition-shadow cursor-pointer"
+          >
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-lg font-semibold text-gray-700 dark:text-gray-200">
+                  Code Editor
+                </h3>
+                <p className="text-3xl font-bold text-blue-600 dark:text-blue-400">
+                  New
+                </p>
+              </div>
+              <FaCode className="text-blue-500 dark:text-blue-400 text-3xl" />
+            </div>
+            <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
+              Write, test and get AI suggestions
+            </p>
+          </div>
         </div>
 
         {/* Render FriendListModal */}
