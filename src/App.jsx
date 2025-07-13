@@ -10,8 +10,13 @@ import FindBuddy from "./pages/FindBuddy";
 import MicroProjectsPage from "./pages/MicroProjectsPage";
 import ShowcaseProjectsPage from "./pages/ShowcaseProjectsPage";
 import Dashboard from "./pages/Dashboard";
+import EditProfile from "./pages/EditProfile"; 
 import Chat from "./pages/Chat"; // Add this import
+<<<<<<< HEAD
 import Payment from "./pages/Payments";
+=======
+import CodeEditor from "./pages/CodeEditor";
+>>>>>>> main
 
 function App() {
   return (
@@ -25,6 +30,10 @@ function App() {
             <Route
               path="/dashboard"
               element={<ProtectedRoute><Dashboard /></ProtectedRoute>}
+            />
+            <Route
+              path="/edit-profile"
+              element={<ProtectedRoute><EditProfile /></ProtectedRoute>}
             />
             <Route
               path="/find_buddy"
@@ -42,10 +51,14 @@ function App() {
               path="/chat"
               element={<ProtectedRoute><Layout><Chat /></Layout></ProtectedRoute>}
             />
+<<<<<<< HEAD
             <Route
               path="/payment"
               element={<ProtectedRoute><Layout><Payment /></Layout></ProtectedRoute>}
             />
+=======
+            <Route path="/code-editor" element={<CodeEditor />} />
+>>>>>>> main
           </Routes>
         </Router>
       </AuthProvider>

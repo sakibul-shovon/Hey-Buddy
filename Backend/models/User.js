@@ -16,7 +16,7 @@ mongoose
     console.error("❌ MongoDB Connection Failed:", err);
   });
 
-// ✅ Define User Schema (References ProfilePictures)
+// ✅ Define User Schema (References ProfilePictures and friends)
 const userSchema = new mongoose.Schema({
   email: {
     type: String,
@@ -29,16 +29,74 @@ const userSchema = new mongoose.Schema({
   },
   profilePictureId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "ProfilePictures",
+    ref: "ProfilePictures", // Reference to ProfilePictures model
     default: null,
   },
+  name: {
+    type: String,
+    required: false,  // Non-required field
+    default: null,
+  },
+  title: {
+    type: String,
+    required: false,  // Non-required field
+    default: null,
+  },
+  experience: {
+    type: String,
+    required: false,  // Non-required field
+    default: null,
+  },
+  skills: {
+    type: [String],
+    required: false,  // Non-required field
+  },
+  interests: {
+    type: [String],
+    required: false,  // Non-required field
+  },
+  lookingFor: {
+    type: [String],
+    required: false,  // Non-required field
+    default: null,
+  },
+  friends: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "UserCollection",  // Reference to the UserCollection model
+    required: false,
+    default: [],
+  }],
+  githubUrl: {
+    type: String,
+    required: false,  // Non-required field
+    default: null,
+  },
+  portfolio: {
+    type: String,
+    required: false,  // Non-required field
+    default: null,
+  },
+  bio: {
+    type: String,
+    required: false,  // Non-required field
+    default: null,
+  },
+  image: {
+    type: String,
+    required: false,  // Non-required field
+    default: null,
+  },
+  loginDates: {
+    type: [Date],
+    default: []
+  }
 });
 
 // ✅ Define Profile Picture Schema (Separate Collection)
 const profilePictureSchema = new mongoose.Schema({
   userId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "UserCollection",
+    ref: "UserCollection",  // Reference to the UserCollection model
     required: true,
   },
   url: {

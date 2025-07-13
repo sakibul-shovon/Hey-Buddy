@@ -13,14 +13,21 @@ import {
   FaCamera,
   FaSun,
   FaMoon,
+<<<<<<< HEAD
   FaCreditCard, // New icon for payment
+=======
+  FaCode,
+>>>>>>> main
 } from "react-icons/fa";
+import { AiOutlineRobot } from "react-icons/ai"; // AI icon
 import CalendarHeatmap from "react-calendar-heatmap";
 import "react-calendar-heatmap/dist/styles.css";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
+import FriendListModal from "../components/FriendListModal";
 
 const Dashboard = () => {
+  // General UI states
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [uploadedImage, setUploadedImage] = useState(null);
   const [selectedFile, setSelectedFile] = useState(null);
@@ -32,6 +39,13 @@ const Dashboard = () => {
     if (savedMode) return savedMode === "dark";
     return window.matchMedia("(prefers-color-scheme: dark)").matches;
   });
+  const { connections } = useContext(AuthContext);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  // Chatbot states
+  const [showChatbot, setShowChatbot] = useState(false);
+  const [chatMessages, setChatMessages] = useState([]);
+  const [chatInput, setChatInput] = useState("");
 
   const fileInputRef = useRef(null);
   const navigate = useNavigate();
@@ -45,8 +59,16 @@ const Dashboard = () => {
     { date: "2024-02-10", count: 8 },
     { date: "2024-02-15", count: 3 },
     { date: "2024-02-20", count: 7 },
+    { date: "2024-03-15", count: 3 },
   ];
 
+<<<<<<< HEAD
+=======
+  // Gemini API Key
+  // const GEMINI_API_KEY = 
+  const GEMINI_API_KEY = "AIzaSyDp9Q7j360oitWZ_XqjCTJP89TCBPSbSvs";
+  // Fetch profile picture on load
+>>>>>>> main
   useEffect(() => {
     if (!authToken) {
       setError("User not logged in.");
@@ -90,6 +112,10 @@ const Dashboard = () => {
 
   const toggleDarkMode = () => setDarkMode((prev) => !prev);
 
+<<<<<<< HEAD
+=======
+  // Handle file selection for profile picture upload
+>>>>>>> main
   const handleFileChange = (e) => {
     if (e.target.files && e.target.files[0]) {
       setSelectedFile(e.target.files[0]);
@@ -98,6 +124,10 @@ const Dashboard = () => {
     }
   };
 
+<<<<<<< HEAD
+=======
+  // Handle profile picture upload
+>>>>>>> main
   const handleUpload = async () => {
     if (!selectedFile) {
       setError("⚠️ Please select an image before uploading.");
@@ -134,9 +164,7 @@ const Dashboard = () => {
       );
       const uploadData = await uploadResponse.json();
       if (!uploadResponse.ok)
-        throw new Error(
-          `❌ Cloudinary Upload Failed: ${uploadData.error?.message}`
-        );
+        throw new Error(`❌ Cloudinary Upload Failed: ${uploadData.error?.message}`);
       setUploadedImage(uploadData.secure_url);
       await fetch(`${API_URL}/api/user/profile`, {
         method: "POST",
@@ -161,6 +189,10 @@ const Dashboard = () => {
     }
   };
 
+<<<<<<< HEAD
+=======
+  // Handle remove profile picture
+>>>>>>> main
   const handleRemoveProfilePicture = async () => {
     if (!authToken) {
       setError("⚠️ User not logged in.");
@@ -186,8 +218,60 @@ const Dashboard = () => {
     navigate("/login");
   };
 
+  // Gemini API integration for chatbot response using gemini-1.5-flash
+  const getAIResponse = async (userMessage) => {
+    try {
+      const response = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            contents: [
+              {
+                parts: [
+                  {
+                    text: userMessage,
+                  },
+                ],
+              },
+            ],
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`Gemini API error: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      const generatedText = data.candidates?.[0]?.content?.parts?.[0]?.text;
+
+      if (generatedText) {
+        return generatedText;
+      } else {
+        throw new Error("No valid response from Gemini API.");
+      }
+    } catch (err) {
+      console.error("Gemini API error:", err);
+      return "Sorry, I'm having trouble responding right now. Please try again.";
+    }
+  };
+
+  // Handle sending a message in the chatbot
+  const handleSendMessage = async () => {
+    if (!chatInput.trim()) return;
+    const userText = chatInput.trim();
+    setChatMessages((prev) => [...prev, { sender: "user", text: userText }]);
+    setChatInput("");
+    const botText = await getAIResponse(userText);
+    setChatMessages((prev) => [...prev, { sender: "bot", text: botText }]);
+  };
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-900 dark:to-gray-800 text-gray-900 dark:text-gray-100 flex">
+    <div className="min-h-screen bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-900 dark:to-gray-800 text-gray-900 dark:text-gray-100 flex relative">
       {/* Sidebar Drawer */}
       <div
         className={`fixed inset-y-0 left-0 transform ${
@@ -267,6 +351,13 @@ const Dashboard = () => {
               <FaCog className="text-teal-400" />
               <span>Settings</span>
             </li>
+            <li
+              onClick={() => navigate("/code-editor")}
+              className="flex items-center space-x-3 cursor-pointer hover:bg-gray-700 p-2 rounded-md transition-colors"
+            >
+              <FaCode className="text-teal-400" />
+              <span>Code Editor</span>
+            </li>
           </ul>
           <button
             onClick={handleLogout}
@@ -294,7 +385,7 @@ const Dashboard = () => {
               <FaBars />
             </button>
             <h1 className="text-3xl font-bold tracking-tight text-gray-800 dark:text-gray-100">
-              Welcome back, {username && username.split("@")[0]}!
+              Welcome back, {username ? username.split('@')[0].charAt(0).toUpperCase() + username.split('@')[0].slice(1) : 'User'}!
             </h1>
           </div>
           <div className="flex items-center space-x-4 w-full md:w-auto">
@@ -380,9 +471,17 @@ const Dashboard = () => {
           )}
           {error && <p className="text-red-500 mt-2">{error}</p>}
         </div>
+        <div className="mt-4">
+          <button
+            onClick={() => navigate("/edit-profile")}
+            className="mb-5 px-6 py-2 bg-teal-500 text-white rounded-md hover:bg-teal-600 transition"
+          >
+            Edit Profile
+          </button>
+        </div>
 
         {/* Stats Section */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg hover:shadow-xl transition-shadow">
             <div className="flex items-center justify-between">
               <div>
@@ -390,7 +489,7 @@ const Dashboard = () => {
                   Active Projects
                 </h3>
                 <p className="text-3xl font-bold text-teal-600 dark:text-teal-400">
-                  12
+                  0
                 </p>
               </div>
               <FaProjectDiagram className="text-teal-500 dark:text-teal-400 text-3xl" />
@@ -399,14 +498,18 @@ const Dashboard = () => {
               +2 projects this month
             </p>
           </div>
-          <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg hover:shadow-xl transition-shadow">
+
+          <div
+            className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg hover:shadow-xl transition-shadow cursor-pointer"
+            onClick={() => navigate("/find_buddy")}
+          >
             <div className="flex items-center justify-between">
               <div>
                 <h3 className="text-lg font-semibold text-gray-700 dark:text-gray-200">
                   Team Members
                 </h3>
                 <p className="text-3xl font-bold text-green-600 dark:text-green-400">
-                  24
+                  2
                 </p>
               </div>
               <FaUsers className="text-green-500 dark:text-green-400 text-3xl" />
@@ -415,7 +518,11 @@ const Dashboard = () => {
               +4 new connections
             </p>
           </div>
-          <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg hover:shadow-xl transition-shadow">
+
+          <button
+            onClick={() => navigate("/chat")}
+            className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg hover:shadow-xl transition-shadow text-left"
+          >
             <div className="flex items-center justify-between">
               <div>
                 <h3 className="text-lg font-semibold text-gray-700 dark:text-gray-200">
@@ -430,8 +537,35 @@ const Dashboard = () => {
             <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
               3 unread messages
             </p>
+          </button>
+
+          <div
+            onClick={() => navigate("/code-editor")}
+            className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg hover:shadow-xl transition-shadow cursor-pointer"
+          >
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-lg font-semibold text-gray-700 dark:text-gray-200">
+                  Code Editor
+                </h3>
+                <p className="text-3xl font-bold text-blue-600 dark:text-blue-400">
+                  New
+                </p>
+              </div>
+              <FaCode className="text-blue-500 dark:text-blue-400 text-3xl" />
+            </div>
+            <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
+              Write, test and get AI suggestions
+            </p>
           </div>
         </div>
+
+        {/* Render FriendListModal */}
+        <FriendListModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          friends={connections}
+        />
 
         {/* Events & Achievements */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
@@ -478,15 +612,67 @@ const Dashboard = () => {
                 startDate={new Date("2024-01-01")}
                 endDate={new Date("2024-12-31")}
                 values={heatmapData}
-                classForValue={(value) =>
-                  value ? `color-scale-${value.count}` : "color-empty"
-                }
+                classForValue={(value) => (value ? `color-scale-${value.count}` : "color-empty")}
                 style={{ width: "100%", margin: "auto" }}
               />
             </div>
           </div>
         </div>
       </div>
+
+      {/* AI Chatbot Icon */}
+      <div className="fixed bottom-4 right-4 z-50">
+        <button
+          onClick={() => setShowChatbot(true)}
+          className="bg-teal-500 hover:bg-teal-600 text-white p-4 rounded-full shadow-lg"
+        >
+          <AiOutlineRobot size={24} />
+        </button>
+      </div>
+
+      {/* AI Chatbot Popup */}
+      {showChatbot && (
+        <div className="fixed bottom-20 right-4 z-50 bg-white dark:bg-gray-800 rounded-lg shadow-xl w-80 max-h-96 flex flex-col">
+          <div className="bg-teal-500 text-white p-3 rounded-t-lg flex justify-between items-center">
+            <span>AI Chatbot </span>
+            <button onClick={() => setShowChatbot(false)}>
+              <FaTimes />
+            </button>
+          </div>
+          <div className="flex-1 p-3 overflow-y-auto space-y-2">
+            {chatMessages.length === 0 ? (
+              <p className="text-gray-500 dark:text-gray-400">No messages yet.</p>
+            ) : (
+              chatMessages.map((msg, idx) => (
+                <div
+                  key={idx}
+                  className={`p-2 rounded ${
+                    msg.sender === "user"
+                      ? "bg-teal-100 text-right dark:bg-teal-700 dark:text-white"
+                      : "bg-gray-200 dark:bg-gray-600 dark:text-white"
+                  }`}
+                >
+                  {msg.text}
+                </div>
+              ))
+            )}
+          </div>
+          <div className="p-3 border-t border-gray-300 dark:border-gray-700">
+            <input
+              type="text"
+              value={chatInput}
+              onChange={(e) => setChatInput(e.target.value)}
+              placeholder="Type a message..."
+              className="w-full p-2 border border-gray-300 rounded focus:outline-none dark:bg-gray-700 dark:text-white"
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  handleSendMessage();
+                }
+              }}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 };

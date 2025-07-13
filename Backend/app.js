@@ -8,8 +8,13 @@ import cloudinary from "cloudinary";
 import { createServer } from "http"; // Import createServer for Socket.IO
 import { Server } from "socket.io"; // Import Server from socket.io
 import { UserCollection, ProfilePictures } from "./models/User.js";
+<<<<<<< HEAD
 import userRoutes from './routes/userRoutes.js'; // Import user routes
 import projectRoutes from './routes/projectRoutes.js'; // Import project routes
+=======
+import projectRoutes from './routes/projectRoutes.js';
+import microprojectsRoutes from './routes/microprojectsRoutes.js';
+>>>>>>> main
 
 dotenv.config();
 
@@ -31,6 +36,7 @@ app.use(
     credentials: true,
   })
 );
+app.use('/api', microprojectsRoutes);
 
 // ✅ Ensure Environment Variables Exist
 const mongoURI = process.env.MONGO_URI;
@@ -132,49 +138,153 @@ cloudinary.config({
 
 // ✅ Upload Profile Picture & Save in MongoDB
 app.post("/api/user/profile", authenticateUser, async (req, res) => {
+  const {
+    name,
+    bio,
+    title,
+    githubUrl,
+    portfolio,
+    skills,
+    experience,
+    interests,
+    profilePicture,
+    friendsToAdd, // Assume this is an array of friend userIds to add
+    friendsToRemove, // Array of userIds to remove
+  } = req.body;
+
   try {
-    const { profilePicture } = req.body;
-    if (!profilePicture?.url || !profilePicture?.publicId) {
-      return res.status(400).json({ error: "Missing required fields" });
+    const user = await UserCollection.findById(req.user.id);
+
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
     }
 
-    // ✅ Find User
-    const user = await UserCollection.findById(req.user.id);
-    if (!user) return res.status(404).json({ error: "User not found" });
+    // Update the user profile details
+    if (name) user.name = name;
+    if (bio) user.bio = bio;
+    if (title) user.title = title;
+    if (githubUrl) user.githubUrl = githubUrl;
+    if (portfolio) user.portfolio = portfolio;
+    if (skills) user.skills = skills;
+    if (experience) user.experience = experience;
+    if (interests) user.interests = interests;
 
-    // ✅ Update or Create Profile Picture
-    const updatedProfilePic = await ProfilePictures.findOneAndUpdate(
-      { userId: user._id },
-      { url: profilePicture.url, publicId: profilePicture.publicId },
-      { new: true, upsert: true }
-    );
+    // Handle profile picture update if present
+    if (profilePicture) {
+      const updatedProfilePic = await ProfilePictures.findOneAndUpdate(
+        { userId: user._id },
+        { url: profilePicture.url, publicId: profilePicture.publicId },
+        { new: true, upsert: true }
+      );
+      user.profilePictureId = updatedProfilePic._id;
+    }
 
-    // ✅ Update User Collection to store reference
-    user.profilePictureId = updatedProfilePic._id;
+    // Handle friends update (add/remove)
+    if (friendsToAdd && Array.isArray(friendsToAdd)) {
+      user.friends = [...user.friends, ...friendsToAdd];
+    }
+
+    if (friendsToRemove && Array.isArray(friendsToRemove)) {
+      user.friends = user.friends.filter(friendId => !friendsToRemove.includes(friendId));
+    }
+
     await user.save();
-
-    res.status(200).json({ message: "Profile picture updated", profilePicture: updatedProfilePic });
+    res.status(200).json({ message: "Profile updated successfully" });
   } catch (err) {
-    console.error("❌ Error updating profile picture:", err);
-    res.status(500).json({ error: "Failed to update profile picture" });
+    console.error("Error updating profile:", err);
+    res.status(500).json({ error: "Failed to update profile" });
   }
 });
+
+
 
 // ✅ Fetch User Profile Picture
+// Fetch User Profile Picture and Other User Data
+// Fetch User Profile Picture and Other User Data
 app.get("/api/user/profile", authenticateUser, async (req, res) => {
   try {
-    const user = await UserCollection.findById(req.user.id).populate("profilePictureId");
+    const user = await UserCollection.findById(req.user.id)
+      .populate("profilePictureId") // Populating profile picture
+      .populate("friends"); // Populate friends array to return full user details of friends
 
-    if (!user || !user.profilePictureId) {
-      return res.status(404).json({ error: "No profile picture found" });
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
     }
 
-    res.json({ profilePicture: { url: user.profilePictureId.url } });
+    // Returning the full user data, including the profile picture URL and friends
+    res.json({
+      name: user.name,
+      bio: user.bio,
+      skills: user.skills,
+      experience: user.experience,
+      interests: user.interests,
+      title: user.title,
+      githubUrl: user.githubUrl,
+      portfolio: user.portfolio,
+      profilePicture: { url: user.profilePictureId?.url }, // Profile picture URL
+      friends: user.friends.map(friend => ({
+        name: friend.name,
+        title: friend.title,
+        profilePicture: friend.profilePictureId?.url, // Friend's profile picture
+      })),
+    });
   } catch (err) {
-    console.error("❌ Error fetching profile picture:", err);
-    res.status(500).json({ error: "Failed to fetch profile picture" });
+    console.error("❌ Error fetching profile:", err);
+    res.status(500).json({ error: "Failed to fetch profile" });
   }
 });
+
+
+// Fetch users
+// Fetch users with populated profile picture
+app.get("/api/users", authenticateUser, async (req, res) => {
+  try {
+    const users = await UserCollection.find()
+      .populate("profilePictureId")  // Populate the profile picture field
+      .exec();
+    res.status(200).json(users);  // Send users with profile picture data
+  } catch (err) {
+    console.error("Error fetching users:", err);
+    res.status(500).json({ error: "Failed to fetch users" });
+  }
+});
+
+
+// Add friend to a user's friends list
+app.post("/api/user/add-friend", authenticateUser, async (req, res) => {
+  const { friendId } = req.body;
+  console.log("Ok!");
+
+  try {
+    const user = await UserCollection.findById(req.user.id);
+    const friend = await UserCollection.findById(friendId);
+
+    console.log(req.user.id); console.log(friendId);
+
+    if (!user || !friend) {
+      return res.status(404).json({ error: "User or friend not found" });
+    }
+
+    // Add the friend to the user's friend list (bi-directional)
+    if (!user.friends.includes(friendId)) {
+      user.friends.push(friendId);
+    }
+
+    if (!friend.friends.includes(req.user.id)) {
+      friend.friends.push(req.user.id);
+    }
+
+    await user.save();
+    await friend.save();
+
+    res.status(200).json({ message: "Friend added successfully" });
+  } catch (err) {
+    console.error("Error adding friend:", err);
+    res.status(500).json({ error: "Failed to add friend" });
+  }
+});
+
+
 
 app.get("/api/cloudinary-signature", authenticateUser, (req, res) => {
   try {
@@ -227,6 +337,7 @@ app.delete("/api/user/profile", authenticateUser, async (req, res) => {
   }
 });
 
+<<<<<<< HEAD
 // Use user routes
 app.use('/api', userRoutes);
 
@@ -242,6 +353,10 @@ io.on("connection", (socket) => {
   });
 });
 
+=======
+app.use('/api', projectRoutes);
+
+>>>>>>> main
 /* ----- Server Start ----- */
 const PORT = process.env.PORT || 8000;
 server.listen(PORT, () => {
