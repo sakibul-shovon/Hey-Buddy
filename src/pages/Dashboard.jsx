@@ -66,7 +66,7 @@ const Dashboard = () => {
 =======
   // Gemini API Key
   // const GEMINI_API_KEY = 
-  const GEMINI_API_KEY = "AIzaSyDp9Q7j360oitWZ_XqjCTJP89TCBPSbSvs";
+  const GEMINI_API_KEY = "Gemini API key";
   // Fetch profile picture on load
 >>>>>>> main
   useEffect(() => {
