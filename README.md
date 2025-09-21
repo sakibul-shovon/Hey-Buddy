@@ -16,6 +16,12 @@ https://www.youtube.com/watch?v=Ji_CKBTT7Tg
 - **Activity Heatmap**: Visualize your login activity over time.
 - **AI Chatbot**: Get assistance from an AI-powered chatbot.
 
+## Project Workflow
+
+For a comprehensive understanding of how Hey Buddy works, please refer to:
+- **[📋 Detailed Workflow Documentation](WORKFLOW.md)** - Complete explanation of application features, architecture, and user flows
+- **[🔄 Flow Diagrams](FLOW_DIAGRAMS.md)** - Visual representations of the application structure and data flow
+
 ## Tech Stack
 
 ### Frontend
